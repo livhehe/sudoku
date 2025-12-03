@@ -37,6 +37,7 @@ wrapper.appendChild(pencilContainer);
 
     const input = document.createElement("input");
     input.setAttribute("maxlength", "1");
+    input.readOnly = true;
     wrapper.appendChild(input);
 
     input.addEventListener("focus", () => {
@@ -256,3 +257,4 @@ function updatePencilDisplay(cell) {
 
 // ---------- Initialize ----------
 window.addEventListener("load",()=>newPuzzle(36));
+
