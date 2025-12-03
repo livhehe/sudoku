@@ -1,0 +1,168 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+    background-color: #f5f5f5;
+}
+
+#sudoku-board {
+    display: grid;
+    grid-template-columns: repeat(9, 60px);
+    grid-template-rows: repeat(9, 60px);
+    margin-bottom: 20px;
+}
+
+/* ------------------ BASE CELL (BORDERS ONLY HERE) ------------------ */
+.cell-wrapper {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    box-sizing: border-box;
+    border: 1px solid #999;
+}
+
+/* ----- PERFECT 3×3 BOX BORDERS ----- */
+
+/* Top borders: rows 1, 4, 7 */
+.cell-wrapper:nth-child(-n + 9),
+.cell-wrapper:nth-child(n + 28):nth-child(-n + 36),
+.cell-wrapper:nth-child(n + 55):nth-child(-n + 63) {
+    border-top-width: 3px;
+}
+
+/* Bottom borders: rows 3, 6, 9 */
+.cell-wrapper:nth-child(n + 19):nth-child(-n + 27),
+.cell-wrapper:nth-child(n + 46):nth-child(-n + 54),
+.cell-wrapper:nth-child(n + 73):nth-child(-n + 81) {
+    border-bottom-width: 3px;
+}
+
+/* Left borders: columns 1, 4, 7 */
+.cell-wrapper:nth-child(9n + 1),
+.cell-wrapper:nth-child(9n + 4),
+.cell-wrapper:nth-child(9n + 7) {
+    border-left-width: 3px;
+}
+
+/* Right borders: columns 3, 6, 9 */
+.cell-wrapper:nth-child(9n + 3),
+.cell-wrapper:nth-child(9n + 6),
+.cell-wrapper:nth-child(9n + 9) {
+    border-right-width: 3px;
+}
+
+
+/* ------------------ INPUT STYLING (NO BORDERS TO AVOID OVERLAP) ------------------ */
+.cell-wrapper input {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-size: 1.5rem;
+    border: none;
+    outline: none;
+    background-color: white;
+    caret-color: black;
+}
+
+/* ------------------ GIVEN + USER-ENTERED DIFFERENTIATION ------------------ */
+
+/* Given cells: white background + bold black text */
+.cell-wrapper.given input {
+    background-color: white;
+    font-weight: bold;
+    color: black;
+    pointer-events: none;
+}
+
+/* User-entered numbers = blue */
+.cell-wrapper:not(.given) input {
+    color: #0077ff;
+}
+
+/* ------------------ HIGHLIGHT STATES (APPLIED TO INPUT ONLY) ------------------ */
+
+/* Selected cell */
+.cell-wrapper.selected input {
+    background-color: #cceeff;
+}
+
+/* Related row/column */
+.cell-wrapper.related input {
+    background-color: #e0f7ff;
+}
+
+/* Mistake */
+.cell-wrapper.mistake input {
+    background-color: #ffcccc;
+}
+
+/* ------------------ NUMBER PAD ------------------ */
+#number-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 60px);
+    grid-gap: 5px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.num-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border: 1px solid #999;
+    background-color: white;
+}
+
+.num-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.num-btn.erase {
+    background-color: #ffdddd;
+}
+
+/* ------------------ CONTROLS ------------------ */
+#controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 5px 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: 1px solid #999;
+    background-color: white;
+}
+
+button:hover {
+    background-color: #e0e0e0;
+}
+
+#timer {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+
+/* ------------------ PENCIL MARKS ------------------ */
+.pencil-container {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    pointer-events: none;
+}
+
+.pencil-num {
+    font-size: 0.55rem;
+    color: #777;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

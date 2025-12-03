@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku Race</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Sudoku Race</h1>
+<div id="timer">Time: 0:00</div>
+
+<div id="controls">
+    <button class="diff-btn" data-clues="40">Easy</button>
+    <button class="diff-btn" data-clues="32">Medium</button>
+    <button class="diff-btn" data-clues="26">Hard</button>
+    <button id="new-puzzle-btn">New Puzzle</button>
+    <button id="pencil-btn">Pencil: Off</button>
+</div>
+
+<div id="sudoku-board"></div>
+
+<div id="number-pad">
+    <button class="num-btn">1</button>
+    <button class="num-btn">2</button>
+    <button class="num-btn">3</button>
+    <button class="num-btn">4</button>
+    <button class="num-btn">5</button>
+    <button class="num-btn">6</button>
+    <button class="num-btn">7</button>
+    <button class="num-btn">8</button>
+    <button class="num-btn">9</button>
+    <button class="num-btn erase">Erase</button>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
