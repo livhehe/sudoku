@@ -8,17 +8,31 @@ body {
 }
 
 #sudoku-board {
-    display: grid;
+/*    display: grid;
     grid-template-columns: repeat(9, 60px);
     grid-template-rows: repeat(9, 60px);
     margin-bottom: 20px;
+*/ 
+    width: 90vw;                 /* Board takes 90% of screen width */
+    max-width: 540px;            /* Avoid being too big on desktop */
+    aspect-ratio: 1 / 1;         /* Keeps it perfectly square */
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+    margin-bottom: 20px;  
 }
 
 /* ------------------ BASE CELL (BORDERS ONLY HERE) ------------------ */
 .cell-wrapper {
-    position: relative;
+/*    position: relative;
     width: 60px;
     height: 60px;
+    box-sizing: border-box;
+    border: 1px solid #999;
+*/
+    position: relative;
+    width: 100%;
+    height: 100%;
     box-sizing: border-box;
     border: 1px solid #999;
 }
@@ -166,3 +180,4 @@ button:hover {
     align-items: center;
     justify-content: center;
 }
+
