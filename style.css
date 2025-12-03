@@ -122,27 +122,26 @@ body {
     background-color: #ffcccc;
 }
 
-/* ---------- NUMBER ROW (1–9) ---------- */
+/* ---------- NUMBER PAD (1–9) ---------- */
 #number-pad {
     display: grid;
-    grid-auto-flow: column;
-    gap: 8px;
-    width: 90vw;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 6px;
+    width: 95vw;
     max-width: 600px;
-    margin-top: 10px;
-    justify-content: center;
+    margin-top: 12px;
 }
 
 .num-btn {
-    touch-action: manipulation;
-    width: 100%;               /* fills each column */
-    padding: 18px 0;           /* good vertical tap target */
-    font-size: 2rem;
+    width: 100%;
+    padding: 14px 0;
+    font-size: min(7vw, 2rem);
     font-weight: bold;
     border: 1px solid #999;
     background-color: white;
     border-radius: 10px;
     text-align: center;
+    touch-action: manipulation; /* prevents pinch zoom */
     cursor: pointer;
 }
 
@@ -150,12 +149,13 @@ body {
     background-color: #e0e0e0;
 }
 
-/* ---------- ERASE + PENCIL ROW ---------- */
-#number-pad {
-    display: grid;
-    grid-template-columns: repeat(9, 1fr);   /* 9 equal wide columns */
-    gap: 10px;
-    width: 90vw;
+
+/* ---------- ERASE + PENCIL CONTROLS ---------- */
+#pad-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    width: 95vw;
     max-width: 600px;
     margin-top: 10px;
 }
@@ -168,8 +168,9 @@ body {
     border: 1px solid #999;
     background-color: white;
     border-radius: 8px;
+    text-align: center;
+    touch-action: manipulation;
     cursor: pointer;
-    touch-action: manipulation;      /* Prevent zoom */
 }
 
 .pad-control.erase {
@@ -180,6 +181,12 @@ body {
     background-color: #e0e0e0;
 }
 
+/* ---------- PREVENT TEXT SELECTION ON BUTTONS ---------- */
+.num-btn,
+.pad-control,
+button {
+    user-select: none;
+}
 
 /* ------------------ CONTROLS ------------------ */
 #controls {
@@ -217,12 +224,13 @@ button:hover {
 }
 
 .pencil-num {
-    font-size: 0.7rem;
+    font-size: min(2.8vw, 0.65rem);
     color: #777;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
 
 
 
