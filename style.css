@@ -97,7 +97,6 @@ body {
     background-color: white;
     font-weight: bold;
     color: black;
-    pointer-events: none;
 }
 
 /* User-entered numbers = blue */
@@ -230,6 +229,7 @@ button:hover {
     align-items: center;
     justify-content: center;
 }
+
 
 
 
