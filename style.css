@@ -122,31 +122,64 @@ body {
     background-color: #ffcccc;
 }
 
-/* ------------------ NUMBER PAD ------------------ */
+/* ---------- NUMBER ROW (1–9) ---------- */
 #number-pad {
     display: grid;
-    grid-template-columns: repeat(3, 60px);
-    grid-gap: 5px;
+    grid-auto-flow: column;
+    gap: 8px;
+    width: 90vw;
+    max-width: 600px;
     margin-top: 10px;
-    margin-bottom: 20px;
+    justify-content: center;
 }
 
 .num-btn {
-    width: 60px;
-    height: 60px;
-    font-size: 1.2rem;
-    cursor: pointer;
+    touch-action: manipulation;      /* Prevent double-tap zoom */
+    padding: 14px 0;
+    font-size: 1.8rem;               /* >16px so Safari won’t zoom */
+    font-weight: bold;
     border: 1px solid #999;
     background-color: white;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    min-width: 0;
 }
 
-.num-btn:hover {
+.num-btn:active {
     background-color: #e0e0e0;
 }
 
-.num-btn.erase {
+/* ---------- ERASE + PENCIL ROW ---------- */
+#pad-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    width: 90vw;
+    max-width: 600px;
+    justify-content: center;
+}
+
+.pad-control {
+    flex: 1;
+    padding: 14px 0;
+    font-size: 1.4rem;
+    font-weight: bold;
+    border: 1px solid #999;
+    background-color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    touch-action: manipulation;      /* Prevent zoom */
+}
+
+.pad-control.erase {
     background-color: #ffdddd;
 }
+
+.pad-control:active {
+    background-color: #e0e0e0;
+}
+
 
 /* ------------------ CONTROLS ------------------ */
 #controls {
@@ -190,5 +223,6 @@ button:hover {
     align-items: center;
     justify-content: center;
 }
+
 
 
