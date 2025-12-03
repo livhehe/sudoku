@@ -47,6 +47,13 @@ wrapper.appendChild(pencilContainer);
 
     input.addEventListener("input", (e) => handleInput(i, e.target.value));
 
+    // Allow tapping given cells to highlight row/column
+    wrapper.addEventListener("click", () => {
+         selectedIndex = i;
+        highlightSelected(selectedIndex);
+});
+
+
     board.appendChild(wrapper);
 cells.push({ wrapper, input, number: 0, pencil: new Set(), pencilContainer });
 
@@ -264,5 +271,6 @@ function updatePencilDisplay(cell) {
 
 // ---------- Initialize ----------
 window.addEventListener("load",()=>newPuzzle(36));
+
 
 
