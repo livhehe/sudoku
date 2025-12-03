@@ -1,3 +1,45 @@
+// ---------- SIGN-IN LOGIC ----------
+const usernameInput = document.getElementById("username-input");
+const signinBtn = document.getElementById("signin-btn");
+const menuSection = document.getElementById("menu-section");
+const homeContainer = document.getElementById("home-container");
+const leaderboardList = document.getElementById("leaderboard-list");
+
+signinBtn.addEventListener("click", async () => {
+    const username = usernameInput.value.trim();
+    if (!username) return alert("Please enter a username.");
+
+    const user = window.currentFirebaseUser;
+    if (!user) return alert("Firebase auth not ready. Refresh the page.");
+
+    const db = window.firebaseApp.db;
+    const userRef = db.collection("users").doc(user.uid);
+
+    // Create / update user in Firestore
+    await userRef.set({ username }, { merge: true });
+
+    // Hide sign-in, show menu
+    document.getElementById("signin-section").style.display = "none";
+    menuSection.style.display = "block";
+
+    // Optionally: load leaderboard
+    loadLeaderboard();
+});
+
+async function loadLeaderboard() {
+    leaderboardList.innerHTML = "";
+    const db = window.firebaseApp.db;
+    const usersSnap = await db.collection("users").orderBy("points", "desc").limit(10).get();
+    usersSnap.forEach(doc => {
+        const data = doc.data();
+        const li = document.createElement("li");
+        li.textContent = `${data.username || "Anonymous"}: ${data.points || 0}`;
+        leaderboardList.appendChild(li);
+    });
+}
+
+
+// ---------- SUDOKU STUFF BELOW ----------
 const board = document.getElementById("sudoku-board");
 const timerDisplay = document.getElementById("timer");
 const diffButtons = document.querySelectorAll(".diff-btn");
@@ -276,6 +318,7 @@ function updatePencilDisplay(cell) {
 
 // ---------- Initialize ----------
 window.addEventListener("load",()=>newPuzzle(36));
+
 
 
 
