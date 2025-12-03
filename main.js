@@ -185,6 +185,11 @@ function newPuzzle(clues=36){
         cell.number=puzzle[i];
         cell.input.value=puzzle[i]===0 ? "" : String(puzzle[i]);
         cell.wrapper.classList.remove("given","mistake");
+
+        // Clear Notes
+        cell.pencil.clear();
+        updatePencilDisplay(cell);
+        
         if(given.includes(i)){
             cell.wrapper.classList.add("given");
             givenIndices.add(i);
@@ -271,6 +276,7 @@ function updatePencilDisplay(cell) {
 
 // ---------- Initialize ----------
 window.addEventListener("load",()=>newPuzzle(36));
+
 
 
 
