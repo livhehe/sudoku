@@ -8,7 +8,30 @@
 </head>
 <body>
 
-<h1>Sudoku Race</h1>
+<h1>Sudoku Hehe</h1>
+
+<!-- HOME / LOGIN -->
+<div id="home-container">
+    <h1>Sudoku Race</h1>
+
+    <!-- Username sign-in -->
+    <div id="signin-section">
+        <input type="text" id="username-input" placeholder="Enter your username" />
+        <button id="signin-btn">Sign In</button>
+    </div>
+
+    <!-- Main menu after sign-in -->
+    <div id="menu-section" style="display:none;">
+        <button id="solo-btn">Solo Game</button>
+        <button id="share-btn">Share a Game</button>
+        <button id="enter-code-btn">Enter Code</button>
+        <div id="leaderboard">
+            <h2>Leaderboard</h2>
+            <ul id="leaderboard-list"></ul>
+        </div>
+    </div>
+</div>
+    
 <div id="timer">Time: 0:00</div>
 
 <!-- TOP CONTROLS (difficulty + new puzzle only) -->
@@ -46,4 +69,5 @@
 
 </body>
 </html>
+
 
