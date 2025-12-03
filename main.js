@@ -206,16 +206,6 @@ numberButtons.forEach(btn => btn.addEventListener("click", () => {
 
     const cell = cells[selectedIndex];
 
-    // ERASE BUTTON
-    if (btn.classList.contains("erase")) {
-        cell.number = 0;
-        cell.input.value = "";
-        cell.pencil.clear();
-        updatePencilDisplay(cell);
-        checkMistakes();
-        return;
-    }
-
     const val = parseInt(btn.textContent);
 
     // ---------- PENCIL MODE ----------
@@ -242,6 +232,23 @@ numberButtons.forEach(btn => btn.addEventListener("click", () => {
     checkCompletion();
 }));
 
+// ERASE BUTTON FIX
+const eraseBtn = document.querySelector(".pad-control.erase");
+eraseBtn.addEventListener("click", () => {
+    if (selectedIndex === null) return;
+
+    const cell = cells[selectedIndex];
+
+    if (givenIndices.has(selectedIndex)) return; // do not erase givens
+
+    cell.number = 0;
+    cell.input.value = "";
+    cell.pencil.clear();
+    updatePencilDisplay(cell);
+    checkMistakes();
+});
+
+
 // ---------- Pencil Mark Function ----------
 function updatePencilDisplay(cell) {
     const nums = cell.pencil;
@@ -257,4 +264,5 @@ function updatePencilDisplay(cell) {
 
 // ---------- Initialize ----------
 window.addEventListener("load",()=>newPuzzle(36));
+
 
