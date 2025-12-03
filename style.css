@@ -134,16 +134,16 @@ body {
 }
 
 .num-btn {
-    touch-action: manipulation;      /* Prevent double-tap zoom */
-    padding: 14px 0;
-    font-size: 1.8rem;               /* >16px so Safari won’t zoom */
+    touch-action: manipulation;
+    width: 100%;               /* fills each column */
+    padding: 18px 0;           /* good vertical tap target */
+    font-size: 2rem;
     font-weight: bold;
     border: 1px solid #999;
     background-color: white;
-    border-radius: 8px;
+    border-radius: 10px;
     text-align: center;
     cursor: pointer;
-    min-width: 0;
 }
 
 .num-btn:active {
@@ -151,13 +151,13 @@ body {
 }
 
 /* ---------- ERASE + PENCIL ROW ---------- */
-#pad-controls {
-    display: flex;
+#number-pad {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);   /* 9 equal wide columns */
     gap: 10px;
-    margin-top: 10px;
     width: 90vw;
     max-width: 600px;
-    justify-content: center;
+    margin-top: 10px;
 }
 
 .pad-control {
@@ -217,12 +217,13 @@ button:hover {
 }
 
 .pencil-num {
-    font-size: 1rem;
+    font-size: 0.7rem;
     color: #777;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
 
 
 
