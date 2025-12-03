@@ -11,16 +11,18 @@
 <h1>Sudoku Race</h1>
 <div id="timer">Time: 0:00</div>
 
+<!-- TOP CONTROLS (difficulty + new puzzle only) -->
 <div id="controls">
     <button class="diff-btn" data-clues="40">Easy</button>
     <button class="diff-btn" data-clues="32">Medium</button>
     <button class="diff-btn" data-clues="26">Hard</button>
     <button id="new-puzzle-btn">New Puzzle</button>
-    <button id="pencil-btn">Pencil: Off</button>
 </div>
 
+<!-- SUDOKU GRID -->
 <div id="sudoku-board"></div>
 
+<!-- NUMBER ROW (1–9) -->
 <div id="number-pad">
     <button class="num-btn">1</button>
     <button class="num-btn">2</button>
@@ -31,11 +33,14 @@
     <button class="num-btn">7</button>
     <button class="num-btn">8</button>
     <button class="num-btn">9</button>
-    <button class="num-btn erase">Erase</button>
+</div>
+
+<!-- ERASE + PENCIL ROW -->
+<div id="pad-controls">
+    <button class="pad-control erase">Erase</button>
+    <button id="pencil-btn" class="pad-control">Pencil: Off</button>
 </div>
 
 <script src="main.js"></script>
 </body>
 </html>
-
-
