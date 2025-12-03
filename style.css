@@ -163,11 +163,12 @@ button:hover {
 }
 
 .pencil-num {
-    font-size: 0.55rem;
+    font-size: 1.1rem;
     color: #777;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
 
 
