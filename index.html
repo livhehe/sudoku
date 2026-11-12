@@ -1,72 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-    <title>Sudoku Race</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+  <title>Sudoku Race</title>
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-
-<!-- HOME / LOGIN -->
-<div id="home-container">
+  <div id="home-container">
     <h1>Sudoku Hehe</h1>
-
-    <!-- Username sign-in -->
     <div id="signin-section">
-        <input type="text" id="username-input" placeholder="Enter your username" />
-        <button id="signin-btn">Sign In</button>
+      <input type="text" id="username-input" maxlength="20" placeholder="Enter your username">
+      <button id="signin-btn">Sign In</button>
     </div>
-
-    <!-- Main menu after sign-in -->
     <div id="menu-section" style="display:none;">
-        <button id="solo-btn">Solo Game</button>
-        <button id="share-btn">Share a Game</button>
-        <button id="enter-code-btn">Enter Code</button>
-        <div id="leaderboard">
-            <h2>Leaderboard</h2>
-            <ul id="leaderboard-list"></ul>
-        </div>
+      <p id="welcome-message"></p>
+      <button id="solo-btn">Solo Game</button>
+      <button id="share-btn">Create Race</button>
+      <button id="enter-code-btn">Join Race</button>
+      <div id="join-section" style="display:none;">
+        <input id="room-code-input" maxlength="5" placeholder="5-character code" autocomplete="off">
+        <button id="join-room-btn">Join</button>
+      </div>
+      <div id="room-panel" style="display:none;">
+        <p>Room code: <strong id="room-code-display"></strong></p>
+        <p id="room-status">Waiting for another player…</p>
+        <div id="race-players"></div>
+        <button id="copy-code-btn">Copy code</button>
+        <button id="leave-room-btn">Leave race</button>
+      </div>
+      <div id="leaderboard">
+        <h2>Leaderboard</h2>
+        <ul id="leaderboard-list"></ul>
+      </div>
     </div>
-</div>
-    
-<div id="timer">Time: 0:00</div>
+  </div>
 
-<!-- TOP CONTROLS (difficulty + new puzzle only) -->
-<div id="controls">
-    <button class="diff-btn" data-clues="40">Easy</button>
-    <button class="diff-btn" data-clues="32">Medium</button>
-    <button class="diff-btn" data-clues="26">Hard</button>
-    <button id="new-puzzle-btn">New Puzzle</button>
-</div>
-
-<!-- SUDOKU GRID -->
-<div id="sudoku-board"></div>
-
-<!-- NUMBER ROW (1–9) -->
-<div id="number-pad">
-    <button class="num-btn">1</button>
-    <button class="num-btn">2</button>
-    <button class="num-btn">3</button>
-    <button class="num-btn">4</button>
-    <button class="num-btn">5</button>
-    <button class="num-btn">6</button>
-    <button class="num-btn">7</button>
-    <button class="num-btn">8</button>
-    <button class="num-btn">9</button>
-</div>
-
-<!-- ERASE + PENCIL ROW -->
-<div id="pad-controls">
-    <button class="pad-control erase">Erase</button>
-    <button id="pencil-btn" class="pad-control">Pencil: Off</button>
-</div>
-
-<script type="module" src="/firebase-init.js"></script>
-<script src="main.js"></script>
-
+  <div id="game-area" style="display:none;">
+    <div id="race-status" aria-live="polite"></div>
+    <div id="opponent-progress" style="display:none;"></div>
+    <div id="timer">Time: 0:00</div>
+    <div id="controls">
+      <button class="diff-btn" data-clues="40">Easy</button>
+      <button class="diff-btn" data-clues="32">Medium</button>
+      <button class="diff-btn" data-clues="26">Hard</button>
+      <button id="new-puzzle-btn">New Puzzle</button>
+    </div>
+    <div id="sudoku-board"></div>
+    <div id="number-pad">
+      <button class="num-btn">1</button>
+      <button class="num-btn">2</button>
+      <button class="num-btn">3</button>
+      <button class="num-btn">4</button>
+      <button class="num-btn">5</button>
+      <button class="num-btn">6</button>
+      <button class="num-btn">7</button>
+      <button class="num-btn">8</button>
+      <button class="num-btn">9</button>
+    </div>
+    <div id="pad-controls">
+      <button class="pad-control erase">Erase</button>
+      <button id="pencil-btn" class="pad-control">Pencil: Off</button>
+    </div>
+  </div>
+  <script type="module" src="./firebase-init.js"></script>
+  <script src="./main.js"></script>
 </body>
 </html>
-
-
-
