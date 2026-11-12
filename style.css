@@ -235,3 +235,21 @@ button:hover {
 
 
 
+
+/* Multiplayer lobby and race UI */
+#home-container{width:min(92vw,540px);text-align:center;margin:20px auto}
+#home-container h1{font-size:2.4rem;margin-bottom:24px}
+#signin-section,#menu-section,#join-section,#room-panel{display:flex;flex-direction:column;align-items:center;gap:10px}
+#signin-section input,#join-section input{padding:12px;font-size:1rem;width:min(80%,280px);border:1px solid #aaa;border-radius:8px}
+#menu-section>button,#room-panel button,#join-section button,#signin-section button{padding:11px 18px;border-radius:8px;min-width:170px}
+#leaderboard{margin-top:20px;text-align:left;width:100%}
+#leaderboard h2{text-align:center}
+#leaderboard-list{padding-left:24px}
+#game-area{width:100%;display:flex;flex-direction:column;align-items:center}
+#race-status{font-size:1.2rem;font-weight:bold;margin:12px;text-align:center}
+#opponent-progress{width:min(90vw,540px);padding:10px;margin:4px 0 12px;background:#e4f3ff;border-radius:8px;text-align:center;font-weight:bold}
+#room-panel{margin-top:18px;padding:14px;background:#fff;border:1px solid #ddd;border-radius:12px}
+#race-players{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+#controls{flex-wrap:wrap;justify-content:center}
+#sudoku-board{touch-action:manipulation}
+@media(max-width:500px){#controls button{font-size:.85rem;padding:7px}#home-container h1{font-size:2rem}}
