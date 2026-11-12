@@ -50,7 +50,7 @@ function startTimer(at=Date.now()){
   timerInterval=setInterval(()=>{const s=Math.max(0,Math.floor((Date.now()-startTime)/1000));timerDisplay.textContent=`Time: ${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;},250);
 }
 function stopTimer(){if(timerInterval)clearInterval(timerInterval);timerInterval=null;}
-function showGame(){gameArea.style.display="block";$("home-container").style.display="none";}
+function showGame(){gameArea.style.display="block";$("home-container").style.display="none";$("leave-race-game-btn").style.display=soloMode?"none":"inline-block";}
 function showMenu(){stopTimer();gameArea.style.display="none";$("home-container").style.display="block";}
 function showRaceRoom(){ $("room-panel").style.display="block";$("room-code-display").textContent=roomId||""; }
 function clearRoomWatch(){if(roomUnsubscribe){roomUnsubscribe();roomUnsubscribe=null;}}
@@ -117,6 +117,7 @@ $("enter-code-btn").addEventListener("click",()=>$("join-section").style.display
 $("join-room-btn").addEventListener("click",async()=>{try{await joinRoom($("room-code-input").value);}catch(e){alert(e.message);}});
 $("copy-code-btn").addEventListener("click",()=>navigator.clipboard?.writeText(roomId).then(()=>alert("Room code copied!")).catch(()=>alert("Room code: "+roomId)));
 $("leave-room-btn").addEventListener("click",()=>leaveRoom());
+$("leave-race-game-btn").addEventListener("click",()=>leaveRoom());
 document.querySelectorAll(".diff-btn").forEach(btn=>btn.addEventListener("click",()=>{if(soloMode)startSolo(Number(btn.dataset.clues));else alert("Difficulty is chosen when the race is created.");}));
 $("new-puzzle-btn").addEventListener("click",()=>{if(soloMode)startSolo(36);else alert("Leave this race to start a solo puzzle.");});
 $("pencil-btn").addEventListener("click",()=>{pencilMode=!pencilMode;$("pencil-btn").textContent=pencilMode?"Pencil: On":"Pencil: Off";});
