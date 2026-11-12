@@ -1,325 +1,128 @@
-// ---------- SIGN-IN LOGIC ----------
-const usernameInput = document.getElementById("username-input");
-const signinBtn = document.getElementById("signin-btn");
-const menuSection = document.getElementById("menu-section");
-const homeContainer = document.getElementById("home-container");
-const leaderboardList = document.getElementById("leaderboard-list");
+const $ = id => document.getElementById(id);
+const usernameInput=$("username-input"), signinBtn=$("signin-btn"), menuSection=$("menu-section"), signinSection=$("signin-section");
+const leaderboardList=$("leaderboard-list"), gameArea=$("game-area"), board=$("sudoku-board"), timerDisplay=$("timer");
+const dbApi=()=>window.firebaseApp;
+let currentUser=null, username="", roomId=null, roomUnsubscribe=null, roomData=null, myRole=null;
+let cells=[], selectedIndex=null, givenIndices=new Set(), timerInterval=null, startTime=null, solutionBoard=[], pencilMode=false;
+let soloMode=true, raceStarted=false, completionSent=false;
 
-signinBtn.addEventListener("click", async () => {
-    const username = usernameInput.value.trim();
-    if (!username) return alert("Please enter a username.");
-
-    const user = window.currentFirebaseUser;
-    if (!user) return alert("Firebase auth not ready. Refresh the page.");
-
-    const db = window.firebaseApp.db;
-    const userRef = db.collection("users").doc(user.uid);
-
-    // Create / update user in Firestore
-    await userRef.set({ username }, { merge: true });
-
-    // Hide sign-in, show menu
-    document.getElementById("signin-section").style.display = "none";
-    menuSection.style.display = "block";
-
-    // Optionally: load leaderboard
-    loadLeaderboard();
-});
-
-async function loadLeaderboard() {
-    leaderboardList.innerHTML = "";
-    const db = window.firebaseApp.db;
-    const usersSnap = await db.collection("users").orderBy("points", "desc").limit(10).get();
-    usersSnap.forEach(doc => {
-        const data = doc.data();
-        const li = document.createElement("li");
-        li.textContent = `${data.username || "Anonymous"}: ${data.points || 0}`;
-        leaderboardList.appendChild(li);
-    });
-}
-
-
-// ---------- SUDOKU STUFF BELOW ----------
-const board = document.getElementById("sudoku-board");
-const timerDisplay = document.getElementById("timer");
-const diffButtons = document.querySelectorAll(".diff-btn");
-const newPuzzleBtn = document.getElementById("new-puzzle-btn");
-const numberButtons = document.querySelectorAll(".num-btn");
-
-let cells = [];
-let selectedIndex = null;
-let givenIndices = new Set();
-let timerInterval = null;
-let startTime = null;
-let solutionBoard = [];
-let pencilMode = false;
-
-
-// ---------- Create board ----------
-while (board.firstChild) board.removeChild(board.firstChild);
-
-cells = [];
-for (let i = 0; i < 81; i++) {
-    const wrapper = document.createElement("div");
-    wrapper.classList.add("cell-wrapper");
-
-// --- Pencil container (3×3 grid) ---
-const pencilContainer = document.createElement("div");
-pencilContainer.classList.add("pencil-container");
-
-for (let n = 1; n <= 9; n++) {
-    const p = document.createElement("div");
-    p.classList.add("pencil-num");
-    p.dataset.value = n;
-    pencilContainer.appendChild(p);
-}
-
-wrapper.appendChild(pencilContainer);
-
-
-    const input = document.createElement("input");
-    input.setAttribute("maxlength", "1");
-    input.readOnly = true;
-    wrapper.appendChild(input);
-
-    input.addEventListener("focus", () => {
-        selectedIndex = i;
-        highlightSelected(selectedIndex);
-    });
-
-    input.addEventListener("input", (e) => handleInput(i, e.target.value));
-
-    // Allow tapping given cells to highlight row/column
-    wrapper.addEventListener("click", () => {
-         selectedIndex = i;
-        highlightSelected(selectedIndex);
-});
-
-
+function makeBoard(){
+  board.innerHTML=""; cells=[];
+  for(let i=0;i<81;i++){
+    const wrapper=document.createElement("div"); wrapper.className="cell-wrapper";
+    const pencilContainer=document.createElement("div"); pencilContainer.className="pencil-container";
+    for(let n=1;n<=9;n++){const p=document.createElement("div");p.className="pencil-num";p.dataset.value=n;pencilContainer.appendChild(p);}
+    const input=document.createElement("input");input.maxLength=1;input.readOnly=true;
+    wrapper.append(pencilContainer,input);
+    wrapper.addEventListener("click",()=>{selectedIndex=i;highlightSelected(i);});
     board.appendChild(wrapper);
-cells.push({ wrapper, input, number: 0, pencil: new Set(), pencilContainer });
-
+    cells.push({wrapper,input,number:0,pencil:new Set(),pencilContainer});
+  }
 }
-
-// ---------- Highlight ----------
-function highlightSelected(index) {
-    cells.forEach((c, i) => {
-        c.wrapper.classList.remove("selected", "related");
-        const row1 = Math.floor(index / 9);
-        const col1 = index % 9;
-        const row2 = Math.floor(i / 9);
-        const col2 = i % 9;
-        if (i === index) c.wrapper.classList.add("selected");
-        else if (row1 === row2 || col1 === col2) c.wrapper.classList.add("related");
-    });
+function highlightSelected(index){
+  cells.forEach((c,i)=>{c.wrapper.classList.remove("selected","related");if(i===index)c.wrapper.classList.add("selected");else if(index>=0&&(Math.floor(i/9)===Math.floor(index/9)||i%9===index%9))c.wrapper.classList.add("related");});
 }
-
-// ---------- Timer ----------
-function startTimer() {
-    startTime = Date.now();
-    if (timerInterval) clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-        const sec = Math.floor((Date.now() - startTime) / 1000);
-        timerDisplay.textContent = `Time: ${Math.floor(sec / 60)}:${(sec % 60).toString().padStart(2, '0')}`;
-    }, 1000);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function safe(b,i,n){const r=Math.floor(i/9),c=i%9;for(let x=0;x<9;x++)if(b[r*9+x]===n||b[x*9+c]===n)return false;const br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;for(let y=0;y<3;y++)for(let x=0;x<3;x++)if(b[(br+y)*9+bc+x]===n)return false;return true;}
+function generateSolution(){const b=Array(81).fill(0);function fill(i=0){if(i===81)return true;for(const n of shuffle([1,2,3,4,5,6,7,8,9]))if(safe(b,i,n)){b[i]=n;if(fill(i+1))return true;b[i]=0;}return false;}fill();return b;}
+function countSolutions(input,limit=2){const b=input.slice();let count=0;function fill(i=0){while(i<81&&b[i])i++;if(i===81){count++;return count>=limit;}for(let n=1;n<=9;n++)if(safe(b,i,n)){b[i]=n;if(fill(i+1))return true;b[i]=0;}return false;}fill();return count;}
+function makePuzzle(solution,clues=36){const p=solution.slice();for(const i of shuffle([...Array(81).keys()])){const old=p[i];p[i]=0;if(countSolutions(p)!==1)p[i]=old;else if(p.filter(Boolean).length<=clues)break;}return p;}
+function renderPuzzle(puzzle,solution){
+  solutionBoard=solution.slice();givenIndices.clear();completionSent=false;
+  cells.forEach((cell,i)=>{cell.number=puzzle[i];cell.input.value=puzzle[i]||"";cell.pencil.clear();updatePencilDisplay(cell);cell.wrapper.classList.remove("given","mistake");if(puzzle[i]){givenIndices.add(i);cell.wrapper.classList.add("given");}});
+  selectedIndex=null;highlightSelected(-1);checkMistakes();
 }
-function stopTimer() { if (timerInterval) clearInterval(timerInterval); }
-
-// ---------- Handle input ----------
-function handleInput(index, val) {
-    const cell = cells[index];
-    val = val.replace(/[^1-9]/, "");
-    if (val === "") { cell.number = 0; cell.input.value = ""; }
-    else { cell.number = parseInt(val); cell.input.value = val; }
-    checkMistakes();
-    checkCompletion();
+function updatePencilDisplay(cell){cell.pencilContainer.querySelectorAll(".pencil-num").forEach(el=>{const n=Number(el.dataset.value);el.textContent=cell.pencil.has(n)?n:"";});}
+function checkMistakes(){cells.forEach(c=>c.wrapper.classList.remove("mistake"));const a=cells.map(c=>c.number);for(let i=0;i<81;i++){const n=a[i];if(!n)continue;const r=Math.floor(i/9),c=i%9;for(let j=0;j<9;j++){if(j!==c&&a[r*9+j]===n)cells[i].wrapper.classList.add("mistake");if(j!==r&&a[j*9+c]===n)cells[i].wrapper.classList.add("mistake");}const br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;for(let y=0;y<3;y++)for(let x=0;x<3;x++){const k=(br+y)*9+bc+x;if(k!==i&&a[k]===n)cells[i].wrapper.classList.add("mistake");}}}
+function progress(){let correct=0;cells.forEach((c,i)=>{if(!givenIndices.has(i)&&c.number===solutionBoard[i])correct++;});return correct;}
+function updateProgress(){if(!roomId||!raceStarted)return;const api=dbApi();const value=progress();api.updateDoc(api.doc(api.db,"rooms",roomId),{[`players.${currentUser.uid}.progress`]:value}).catch(console.error);}
+function checkCompletion(){
+  const complete=cells.every((c,i)=>c.number===solutionBoard[i]);
+  if(!complete)return;
+  stopTimer();
+  if(soloMode){$("race-status").textContent="Puzzle complete! 🎉";return;}
+  if(completionSent||!roomId)return;completionSent=true;
+  const api=dbApi();const ref=api.doc(api.db,"rooms",roomId);
+  api.runTransaction(api.db,async tx=>{const snap=await tx.get(ref);const data=snap.data();if(data.status==="running"&&!data.winnerUid)tx.update(ref,{status:"finished",winnerUid:currentUser.uid,finishedAt:Date.now()});}).catch(console.error);
 }
-
-// ---------- Mistake checking ----------
-function checkMistakes() {
-    cells.forEach(c => c.wrapper.classList.remove("mistake"));
-    const boardArray = cells.map(c => c.number);
-    for (let i = 0; i < 81; i++) {
-        const val = boardArray[i]; if (val === 0) continue;
-        const row = Math.floor(i / 9), col = i % 9;
-
-        for (let c = 0; c < 9; c++) if (c !== col && boardArray[row*9+c] === val) cells[i].wrapper.classList.add("mistake");
-        for (let r = 0; r < 9; r++) if (r !== row && boardArray[r*9+col] === val) cells[i].wrapper.classList.add("mistake");
-
-        const br = Math.floor(row/3)*3, bc = Math.floor(col/3)*3;
-        for (let r=0;r<3;r++) for (let c2=0;c2<3;c2++) {
-            const idx = (br+r)*9 + (bc+c2);
-            if (idx !== i && boardArray[idx]===val) cells[i].wrapper.classList.add("mistake");
-        }
+function startTimer(at=Date.now()){
+  stopTimer();startTime=at;
+  timerInterval=setInterval(()=>{const s=Math.max(0,Math.floor((Date.now()-startTime)/1000));timerDisplay.textContent=`Time: ${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;},250);
+}
+function stopTimer(){if(timerInterval)clearInterval(timerInterval);timerInterval=null;}
+function showGame(){gameArea.style.display="block";$("home-container").style.display="none";}
+function showMenu(){stopTimer();gameArea.style.display="none";$("home-container").style.display="block";}
+function showRaceRoom(){ $("room-panel").style.display="block";$("room-code-display").textContent=roomId||""; }
+function clearRoomWatch(){if(roomUnsubscribe){roomUnsubscribe();roomUnsubscribe=null;}}
+function watchRoom(){
+  clearRoomWatch();const api=dbApi();const ref=api.doc(api.db,"rooms",roomId);
+  roomUnsubscribe=api.onSnapshot(ref,snap=>{if(!snap.exists()){alert("This race room no longer exists.");leaveRoom(false);return;}roomData=snap.data();renderRoomState();});
+}
+function renderRoomState(){
+  const players=Object.entries(roomData.players||{});
+  $("race-players").innerHTML=players.map(([uid,p])=>`<div>${escapeHtml(p.username)} ${uid===currentUser.uid?"(you)":""}</div>`).join("");
+  const opponent=players.find(([uid])=>uid!==currentUser.uid);
+  $("room-status").textContent=roomData.status==="waiting"?"Waiting for another player…":roomData.status==="countdown"?"Both players are in. Get ready!":roomData.status==="running"?"Race in progress!":roomData.status==="finished"?`${roomData.players[roomData.winnerUid]?.username||"Someone"} won!`:"Room ready";
+  if(opponent){$("opponent-progress").style.display="block";const pct=Math.round(((opponent[1].progress||0)/Math.max(1,81-givenIndices.size))*100);$("opponent-progress").textContent=`${escapeHtml(opponent[1].username)}: ${pct}% complete`;}
+  else $("opponent-progress").style.display="none";
+  if(roomData.status==="countdown"||roomData.status==="running"||roomData.status==="finished"){
+    showGame();
+    if(!raceStarted&&roomData.puzzle&&roomData.solution){soloMode=false;renderPuzzle(roomData.puzzle,roomData.solution);}
+    if(roomData.status==="countdown"){
+      const remaining=Math.max(0,Math.ceil((roomData.startAt-Date.now())/1000));
+      $("race-status").textContent=remaining>0?`Race starts in ${remaining}…`:"GO!";
+      if(remaining<=0&&!raceStarted){raceStarted=true;startTimer(roomData.startAt);}
+      else if(!raceStarted)setTimeout(()=>{if(roomData?.status==="countdown")renderRoomState();},250);
+    } else if(roomData.status==="running"){
+      if(!raceStarted){raceStarted=true;startTimer(roomData.startAt);}
+      $("race-status").textContent="Solve the puzzle. First perfect board wins!";
+    } else if(roomData.status==="finished"){
+      stopTimer();const won=roomData.winnerUid===currentUser.uid;
+      $("race-status").textContent=won?"You won! 🎉":"Race over — your opponent won!";
     }
+  }
 }
-
-// ---------- Completion ----------
-function checkCompletion() {
-    if (cells.every(c=>c.number>0)) {
-        stopTimer();
-        alert(`Puzzle complete! Time: ${timerDisplay.textContent.slice(6)}`);
-    }
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+async function createRoom(){
+  const api=dbApi();const solution=generateSolution();const puzzle=makePuzzle(solution,36);const code=Array.from(crypto.getRandomValues(new Uint8Array(5)),x=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[x%32]).join("");
+  const ref=api.doc(api.db,"rooms",code);
+  await api.setDoc(ref,{code,status:"waiting",puzzle,solution,createdAt:Date.now(),players:{[currentUser.uid]:{username,progress:0}}});
+  roomId=code;myRole="host";soloMode=false;raceStarted=false;roomData=null;showRaceRoom();watchRoom();
 }
-
-// ---------- Sudoku generator ----------
-function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
-function isSafe(board,index,num){
-    const row=Math.floor(index/9), col=index%9;
-    for(let c=0;c<9;c++) if(board[row*9+c]===num) return false;
-    for(let r=0;r<9;r++) if(board[r*9+col]===num) return false;
-    const br=Math.floor(row/3)*3, bc=Math.floor(col/3)*3;
-    for(let r=0;r<3;r++) for(let c2=0;c2<3;c2++) if(board[(br+r)*9+(bc+c2)]===num) return false;
-    return true;
+async function joinRoom(code){
+  code=code.trim().toUpperCase();if(!/^[A-Z2-9]{5}$/.test(code))throw new Error("Enter a valid 5-character room code.");
+  const api=dbApi(),ref=api.doc(api.db,"rooms",code);
+  await api.runTransaction(api.db,async tx=>{const snap=await tx.get(ref);if(!snap.exists())throw new Error("Room not found. Check the code.");const data=snap.data();if(data.status!=="waiting")throw new Error("This race has already started.");const players=data.players||{};if(!players[currentUser.uid]&&Object.keys(players).length>=2)throw new Error("This room is full.");players[currentUser.uid]={username,progress:0};tx.update(ref,{players,status:"countdown",startAt:Date.now()+4000});});
+  roomId=code;myRole="guest";soloMode=false;raceStarted=false;showRaceRoom();watchRoom();
 }
-function generateFullBoard(){
-    const board=Array(81).fill(0);
-    function backtrack(pos=0){
-        if(pos===81) return true;
-        const nums=shuffle([1,2,3,4,5,6,7,8,9]);
-        for(let n of nums){
-            if(isSafe(board,pos,n)){
-                board[pos]=n;
-                if(backtrack(pos+1)) return true;
-                board[pos]=0;
-            }
-        }
-        return false;
-    }
-    backtrack(); return board;
+async function leaveRoom(update=true){
+  clearRoomWatch();if(update&&roomId&&currentUser){const api=dbApi();try{await api.updateDoc(api.doc(api.db,"rooms",roomId),{[`players.${currentUser.uid}.left`]:true});}catch(e){console.warn(e);}}
+  roomId=null;roomData=null;raceStarted=false;completionSent=false;$("room-panel").style.display="none";$("opponent-progress").style.display="none";showMenu();
 }
-function countSolutions(boardIn, limit=2){
-    const board=boardIn.slice(); let count=0;
-    function backtrack(pos=0){
-        while(pos<81 && board[pos]!==0) pos++;
-        if(pos===81){ count++; return count>=limit; }
-        for(let n=1;n<=9;n++){
-            if(isSafe(board,pos,n)){
-                board[pos]=n;
-                if(backtrack(pos+1)) return true;
-                board[pos]=0;
-            }
-        }
-        return false;
-    }
-    backtrack(); return count;
+async function signIn(){
+  username=usernameInput.value.trim();if(!username)return alert("Please enter a username.");
+  try{currentUser=await window.firebaseReady;const api=dbApi();await api.setDoc(api.doc(api.db,"users",currentUser.uid),{username},{merge:true});signinSection.style.display="none";menuSection.style.display="block";$("welcome-message").textContent=`Hi, ${username}!`;loadLeaderboard();}catch(e){alert("Could not sign in: "+e.message);}
 }
-function makePuzzleFromSolution(solutionBoard, clues=36){
-    const puzzle=solutionBoard.slice(); const indices=shuffle([...Array(81).keys()]);
-    const removalsTarget=81-clues; let removalsDone=0;
-    for(let idx of indices){
-        const backup=puzzle[idx]; puzzle[idx]=0;
-        if(countSolutions(puzzle,2)!==1) puzzle[idx]=backup;
-        else{ removalsDone++; if(removalsDone>=removalsTarget) break; }
-    }
-    const given=[]; for(let i=0;i<81;i++) if(puzzle[i]!==0) given.push(i);
-    return {puzzle,given};
+async function loadLeaderboard(){
+  try{const api=dbApi();const q=api.query(api.collection(api.db,"users"),api.orderBy("points","desc"),api.limit(10));const snap=await api.getDocs(q);leaderboardList.innerHTML="";snap.forEach(d=>{const li=document.createElement("li");li.textContent=`${d.data().username||"Anonymous"}: ${d.data().points||0}`;leaderboardList.appendChild(li);});}catch(e){console.warn("Leaderboard unavailable:",e);}
 }
-
-// ---------- New Puzzle ----------
-function newPuzzle(clues=36){
-    clues=Math.max(22,Math.min(50,clues));
-    solutionBoard=generateFullBoard();
-    const {puzzle,given}=makePuzzleFromSolution(solutionBoard,clues);
-    givenIndices.clear();
-    for(let i=0;i<81;i++){
-        const cell=cells[i];
-        cell.number=puzzle[i];
-        cell.input.value=puzzle[i]===0 ? "" : String(puzzle[i]);
-        cell.wrapper.classList.remove("given","mistake");
-
-        // Clear Notes
-        cell.pencil.clear();
-        updatePencilDisplay(cell);
-        
-        if(given.includes(i)){
-            cell.wrapper.classList.add("given");
-            givenIndices.add(i);
-        }
-    }
-    startTimer();
-    selectedIndex=null;
-    highlightSelected(-1);
-}
-
-// ---------- Buttons ----------
-diffButtons.forEach(btn=>btn.addEventListener("click",()=>{ const clues=parseInt(btn.dataset.clues,10); newPuzzle(clues); }));
-newPuzzleBtn.addEventListener("click",()=>newPuzzle(36));
-
-// ---------- Pencil Marks ----------
-const pencilBtn = document.getElementById("pencil-btn");
-pencilBtn.addEventListener("click", () => {
-    pencilMode = !pencilMode;
-    pencilBtn.textContent = pencilMode ? "Pencil: On" : "Pencil: Off";
-});
-
-
-// ---------- Number pad ----------
-numberButtons.forEach(btn => btn.addEventListener("click", () => {
-    if (selectedIndex === null) return;
-
-    const cell = cells[selectedIndex];
-
-    const val = parseInt(btn.textContent);
-
-    // ---------- PENCIL MODE ----------
-    if (pencilMode) {
-        // Cannot pencil into a given cell
-        if (givenIndices.has(selectedIndex)) return;
-
-        if (cell.number !== 0) return; // cannot pencil over a placed number
-
-        // Toggle pencil mark on/off
-        if (cell.pencil.has(val)) cell.pencil.delete(val);
-        else cell.pencil.add(val);
-
-        updatePencilDisplay(cell);
-        return;
-    }
-
-    // ---------- NORMAL NUMBER ENTRY ----------
-    cell.number = val;
-    cell.input.value = val;
-    cell.pencil.clear();
-    updatePencilDisplay(cell);
-    checkMistakes();
-    checkCompletion();
+function startSolo(clues=36){clearRoomWatch();roomId=null;soloMode=true;raceStarted=true;showGame();$("race-status").textContent="Solo puzzle";$("opponent-progress").style.display="none";const sol=generateSolution();renderPuzzle(makePuzzle(sol,clues),sol);startTimer();}
+signinBtn.addEventListener("click",signIn);
+$("solo-btn").addEventListener("click",()=>startSolo());
+$("share-btn").addEventListener("click",async()=>{try{await createRoom();}catch(e){alert(e.message);}});
+$("enter-code-btn").addEventListener("click",()=>$("join-section").style.display="block");
+$("join-room-btn").addEventListener("click",async()=>{try{await joinRoom($("room-code-input").value);}catch(e){alert(e.message);}});
+$("copy-code-btn").addEventListener("click",()=>navigator.clipboard?.writeText(roomId).then(()=>alert("Room code copied!")).catch(()=>alert("Room code: "+roomId)));
+$("leave-room-btn").addEventListener("click",()=>leaveRoom());
+document.querySelectorAll(".diff-btn").forEach(btn=>btn.addEventListener("click",()=>{if(soloMode)startSolo(Number(btn.dataset.clues));else alert("Difficulty is chosen when the race is created.");}));
+$("new-puzzle-btn").addEventListener("click",()=>{if(soloMode)startSolo(36);else alert("Leave this race to start a solo puzzle.");});
+$("pencil-btn").addEventListener("click",()=>{pencilMode=!pencilMode;$("pencil-btn").textContent=pencilMode?"Pencil: On":"Pencil: Off";});
+document.querySelectorAll(".num-btn").forEach(btn=>btn.addEventListener("click",()=>{
+  if(selectedIndex===null||givenIndices.has(selectedIndex)||(!soloMode&&!raceStarted))return;
+  const cell=cells[selectedIndex],n=Number(btn.textContent);
+  if(pencilMode){if(cell.number)return;cell.pencil.has(n)?cell.pencil.delete(n):cell.pencil.add(n);updatePencilDisplay(cell);return;}
+  cell.number=n;cell.input.value=n;cell.pencil.clear();updatePencilDisplay(cell);checkMistakes();if(!soloMode)updateProgress();checkCompletion();
 }));
-
-// ERASE BUTTON FIX
-const eraseBtn = document.querySelector(".pad-control.erase");
-eraseBtn.addEventListener("click", () => {
-    if (selectedIndex === null) return;
-
-    const cell = cells[selectedIndex];
-
-    if (givenIndices.has(selectedIndex)) return; // do not erase givens
-
-    cell.number = 0;
-    cell.input.value = "";
-    cell.pencil.clear();
-    updatePencilDisplay(cell);
-    checkMistakes();
-});
-
-
-// ---------- Pencil Mark Function ----------
-function updatePencilDisplay(cell) {
-    const nums = cell.pencil;
-    const pencilEls = cell.pencilContainer.querySelectorAll(".pencil-num");
-
-    pencilEls.forEach(el => {
-        const n = parseInt(el.dataset.value);
-        el.textContent = nums.has(n) ? n : "";
-    });
-}
-
-
-
-// ---------- Initialize ----------
-window.addEventListener("load",()=>newPuzzle(36));
-
-
-
-
-
+document.querySelector(".pad-control.erase").addEventListener("click",()=>{if(selectedIndex===null||givenIndices.has(selectedIndex))return;const c=cells[selectedIndex];c.number=0;c.input.value="";c.pencil.clear();updatePencilDisplay(c);checkMistakes();if(!soloMode)updateProgress();});
+window.addEventListener("beforeunload",()=>{if(roomId&&currentUser&&dbApi())dbApi().updateDoc(dbApi().doc(dbApi().db,"rooms",roomId),{[`players.${currentUser.uid}.left`]:true}).catch(()=>{});});
+makeBoard();
