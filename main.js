@@ -71,8 +71,11 @@ function renderRoomState(){
     if(roomData.status==="countdown"){
       const remaining=Math.max(0,Math.ceil((roomData.startAt-Date.now())/1000));
       $("race-status").textContent=remaining>0?`Race starts in ${remaining}…`:"GO!";
-      if(remaining<=0&&!raceStarted){raceStarted=true;startTimer(roomData.startAt);}
-      else if(!raceStarted)setTimeout(()=>{if(roomData?.status==="countdown")renderRoomState();},250);
+      if(remaining<=0&&!raceStarted){
+        raceStarted=true;startTimer(roomData.startAt);
+        const api=dbApi();
+        api.updateDoc(api.doc(api.db,"rooms",roomId),{status:"running"}).catch(console.error);
+      } else if(!raceStarted)setTimeout(()=>{if(roomData?.status==="countdown")renderRoomState();},250);
     } else if(roomData.status==="running"){
       if(!raceStarted){raceStarted=true;startTimer(roomData.startAt);}
       $("race-status").textContent="Solve the puzzle. First perfect board wins!";
