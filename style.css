@@ -538,3 +538,13 @@ button,
     font-size: 1.25rem;
     font-weight: 600;
 }
+
+/* Highlight every peer cell, including original clues, across row, column and box */
+.cell-wrapper.related input,
+.cell-wrapper.related.given input {
+    background-color: #E2EDF6;
+}
+.cell-wrapper.selected input,
+.cell-wrapper.selected.given input {
+    background-color: var(--pale-blue);
+}
