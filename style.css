@@ -850,3 +850,10 @@ body {
 #race-status:not(:empty) {
     margin-bottom: 4px;
 }
+
+
+/* Undo button: keep it visually consistent and indicate when history is empty. */
+#undo-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
