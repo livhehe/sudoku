@@ -57,6 +57,17 @@ function renderPuzzle(puzzle,solution){
   cells.forEach((cell,i)=>{cell.number=puzzle[i];cell.input.value=puzzle[i]||"";cell.pencil.clear();updatePencilDisplay(cell);cell.wrapper.classList.remove("given","mistake");if(puzzle[i]){givenIndices.add(i);cell.wrapper.classList.add("given");}});
   selectedIndex=null;highlightSelected(-1);checkMistakes();updateNumberPad();
 }
+function removePeerPencilMarks(index,number){
+  const row=Math.floor(index/9),col=index%9;
+  const boxRow=Math.floor(row/3),boxCol=Math.floor(col/3);
+  cells.forEach((cell,i)=>{
+    if(i===index)return;
+    const r=Math.floor(i/9),c=i%9;
+    const sharesRow=r===row,sharesColumn=c===col;
+    const sharesBox=Math.floor(r/3)===boxRow&&Math.floor(c/3)===boxCol;
+    if((sharesRow||sharesColumn||sharesBox)&&cell.pencil.delete(number))updatePencilDisplay(cell);
+  });
+}
 function updatePencilDisplay(cell){cell.pencilContainer.querySelectorAll(".pencil-num").forEach(el=>{const n=Number(el.dataset.value);el.textContent=cell.pencil.has(n)?n:"";});}
 function checkMistakes(){
   cells.forEach(c=>c.wrapper.classList.remove("mistake"));
@@ -91,7 +102,7 @@ function updateUndoButton(){
 }
 function rememberMove(index){
   const cell=cells[index];
-  moveHistory.push({index,number:cell.number,pencil:[...cell.pencil]});
+  moveHistory.push({index,number:cell.number,pencil:[...cell.pencil],allPencils:cells.map(c=>[...c.pencil])});
   updateUndoButton();
 }
 function undoMove(){
@@ -100,7 +111,7 @@ function undoMove(){
   const cell=cells[previous.index];
   cell.number=previous.number;
   cell.input.value=previous.number||"";
-  cell.pencil=new Set(previous.pencil);
+  cells.forEach((c,i)=>{c.pencil=new Set(previous.allPencils[i]);updatePencilDisplay(c);});
   selectedIndex=previous.index;
   updatePencilDisplay(cell);
   highlightSelected(selectedIndex);
@@ -282,7 +293,7 @@ document.querySelectorAll(".num-btn").forEach(btn=>btn.addEventListener("click",
   if(gameOver||selectedIndex===null||givenIndices.has(selectedIndex)||(!soloMode&&!raceStarted))return;
   const cell=cells[selectedIndex],n=Number(btn.textContent);
   if(pencilMode){if(cell.number)return;rememberMove(selectedIndex);cell.pencil.has(n)?cell.pencil.delete(n):cell.pencil.add(n);updatePencilDisplay(cell);return;}
-  rememberMove(selectedIndex);cell.number=n;cell.input.value=n;cell.pencil.clear();updatePencilDisplay(cell);highlightSelected(selectedIndex);checkMistakes();updateNumberPad();if(n!==solutionBoard[selectedIndex]){mistakeCount++;updateMistakeCounter();if(mistakeCount>3){endForTooManyMistakes();return;}}if(!soloMode)updateProgress();checkCompletion();
+  rememberMove(selectedIndex);cell.number=n;cell.input.value=n;cell.pencil.clear();updatePencilDisplay(cell);if(n===solutionBoard[selectedIndex])removePeerPencilMarks(selectedIndex,n);highlightSelected(selectedIndex);checkMistakes();updateNumberPad();if(n!==solutionBoard[selectedIndex]){mistakeCount++;updateMistakeCounter();if(mistakeCount>3){endForTooManyMistakes();return;}}if(!soloMode)updateProgress();checkCompletion();
 }));
 document.querySelector(".pad-control.erase").addEventListener("click",()=>{if(selectedIndex===null||givenIndices.has(selectedIndex))return;const c=cells[selectedIndex];if(!c.number&&!c.pencil.size)return;rememberMove(selectedIndex);c.number=0;c.input.value="";c.pencil.clear();updatePencilDisplay(c);highlightSelected(selectedIndex);checkMistakes();updateNumberPad();if(!soloMode)updateProgress();});
 window.addEventListener("beforeunload",()=>{if(roomId&&currentUser&&dbApi())dbApi().updateDoc(dbApi().doc(dbApi().db,"rooms",roomId),{[`players.${currentUser.uid}.left`]:true}).catch(()=>{});});
