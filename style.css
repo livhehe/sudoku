@@ -596,3 +596,18 @@ button,
 .cell-wrapper.same-number input {
     font-weight: 700;
 }
+
+
+/* Mistake highlighting must override row/column and selected-cell colors */
+.cell-wrapper.mistake input,
+.cell-wrapper.mistake.given input {
+    background-color: #FEBFC7 !important;
+    color: #8F2638 !important;
+    font-weight: 700;
+}
+#mistake-counter {
+    color: var(--ink);
+    font-size: 0.9rem;
+    font-weight: 600;
+    min-height: 1.2em;
+}
