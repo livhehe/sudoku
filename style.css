@@ -828,3 +828,25 @@ html, body {
 #mistake-counter {
     min-height: 0;
 }
+
+
+/* Compact the in-game heading and bring the toolbar closer to the board. */
+body {
+    margin-top: 8px;
+}
+#game-title {
+    margin: 0 0 4px;
+    line-height: 1;
+}
+#game-subheader {
+    margin-bottom: 2px;
+}
+#game-toolbar {
+    min-height: 0;
+    margin-top: 0;
+    margin-bottom: 8px;
+    align-items: center;
+}
+#race-status:not(:empty) {
+    margin-bottom: 4px;
+}
