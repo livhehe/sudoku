@@ -121,7 +121,6 @@ $("copy-code-btn").addEventListener("click",()=>navigator.clipboard?.writeText(r
 $("leave-room-btn").addEventListener("click",()=>leaveRoom());
 $("leave-race-game-btn").addEventListener("click",()=>leaveRoom());
 document.querySelectorAll(".diff-btn").forEach(btn=>btn.addEventListener("click",()=>{if(soloMode)startSolo(Number(btn.dataset.clues));else alert("Difficulty is chosen when the race is created.");}));
-$("new-puzzle-btn").addEventListener("click",()=>{if(soloMode)startSolo(36);else alert("Leave this race to start a solo puzzle.");});
 $("pencil-btn").addEventListener("click",()=>{pencilMode=!pencilMode;$("pencil-btn").textContent=pencilMode?"Pencil: On":"Pencil: Off";});
 document.querySelectorAll(".num-btn").forEach(btn=>btn.addEventListener("click",()=>{
   if(selectedIndex===null||givenIndices.has(selectedIndex)||(!soloMode&&!raceStarted))return;
