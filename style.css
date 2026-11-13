@@ -330,3 +330,44 @@ button:active {
     #controls .diff-btn { padding: 6px 9px; font-size: 0.8rem; }
     #timer { font-size: 0.9rem; }
 }
+
+
+/* Stack the solo/race label over difficulty on the left,
+   and Home over the timer on the right. */
+#game-toolbar {
+    align-items: flex-start;
+}
+#toolbar-left,
+#toolbar-right {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+#toolbar-left {
+    align-items: flex-start;
+    min-width: 0;
+}
+#toolbar-right {
+    align-items: flex-end;
+    flex-shrink: 0;
+}
+#race-status {
+    margin: 0;
+    min-height: 1.25em;
+    text-align: left;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+#home-game-btn {
+    margin: 0;
+    padding: 6px 22px;
+    font-size: 0.9rem;
+}
+#timer {
+    margin: 0;
+    min-height: 1.25em;
+}
+@media(max-width:500px) {
+    #toolbar-left, #toolbar-right { gap: 6px; }
+    #home-game-btn { padding: 6px 18px; }
+}
