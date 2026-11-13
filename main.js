@@ -181,7 +181,7 @@ $("share-btn").addEventListener("click",()=>{
   $("join-section").style.display="none";
 });
 $("race-back-btn").addEventListener("click",showMenu);
-document.querySelectorAll(".race-difficulty-btn").forEach(btn=>btn.addEventListener("click",async()=>{try{$("race-difficulty-section").style.display="none";await createRoom(Number(btn.dataset.clues),btn.dataset.difficulty);}catch(e){alert(e.message);}}));
+document.querySelectorAll(".race-difficulty-btn").forEach(btn=>btn.addEventListener("click",async()=>{try{$("race-setup-section").style.display="none";await createRoom(Number(btn.dataset.clues),btn.dataset.difficulty);}catch(e){alert(e.message);}}));
 $("enter-code-btn").addEventListener("click",()=>$("join-section").style.display="block");
 $("join-room-btn").addEventListener("click",async()=>{try{await joinRoom($("room-code-input").value);}catch(e){alert(e.message);}});
 $("copy-code-btn").addEventListener("click",()=>navigator.clipboard?.writeText(roomId).then(()=>alert("Room code copied!")).catch(()=>alert("Room code: "+roomId)));
