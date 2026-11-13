@@ -20,7 +20,15 @@ function makeBoard(){
   }
 }
 function highlightSelected(index){
-  cells.forEach((c,i)=>{c.wrapper.classList.remove("selected","related");if(i===index)c.wrapper.classList.add("selected");else if(index>=0&&(Math.floor(i/9)===Math.floor(index/9)||i%9===index%9))c.wrapper.classList.add("related");});
+  cells.forEach((c,i)=>{
+    c.wrapper.classList.remove("selected","related");
+    if(index<0)return;
+    const row=Math.floor(i/9),col=i%9;
+    const selectedRow=Math.floor(index/9),selectedCol=index%9;
+    const sameBox=Math.floor(row/3)===Math.floor(selectedRow/3)&&Math.floor(col/3)===Math.floor(selectedCol/3);
+    if(i===index)c.wrapper.classList.add("selected");
+    else if(row===selectedRow||col===selectedCol||sameBox)c.wrapper.classList.add("related");
+  });
 }
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function safe(b,i,n){const r=Math.floor(i/9),c=i%9;for(let x=0;x<9;x++)if(b[r*9+x]===n||b[x*9+c]===n)return false;const br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;for(let y=0;y<3;y++)for(let x=0;x<3;x++)if(b[(br+y)*9+bc+x]===n)return false;return true;}
