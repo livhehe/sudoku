@@ -53,7 +53,7 @@ function makePuzzle(solution,clues=36){
   return puzzle;
 }
 function renderPuzzle(puzzle,solution){
-  solutionBoard=solution.slice();givenIndices.clear();completionSent=false;mistakeCount=0;updateMistakeCounter();
+  solutionBoard=solution.slice();givenIndices.clear();completionSent=false;mistakeCount=0;gameOver=false;updateMistakeCounter();
   cells.forEach((cell,i)=>{cell.number=puzzle[i];cell.input.value=puzzle[i]||"";cell.pencil.clear();updatePencilDisplay(cell);cell.wrapper.classList.remove("given","mistake");if(puzzle[i]){givenIndices.add(i);cell.wrapper.classList.add("given");}});
   selectedIndex=null;highlightSelected(-1);checkMistakes();
 }
@@ -80,12 +80,13 @@ function checkMistakes(){
   mistakes.forEach(i=>cells[i].wrapper.classList.add("mistake"));
   return mistakes;
 }
-let mistakeCount=0;
+let mistakeCount=0, gameOver=false;
 function updateMistakeCounter(){
   const counter=$("mistake-counter");
   if(counter)counter.textContent=`Mistakes: ${mistakeCount}/3`;
 }
 async function endForTooManyMistakes(){
+  gameOver=true;
   raceStarted=false;
   stopTimer();
   $("race-status").textContent="Game over — too many mistakes!";
@@ -239,7 +240,7 @@ $("home-game-btn").addEventListener("click",async()=>{if(roomId&&!soloMode){awai
 document.querySelectorAll(".diff-btn").forEach(btn=>btn.addEventListener("click",()=>{if(soloMode)startSolo(Number(btn.dataset.clues));else alert("Difficulty is chosen when the race is created.");}));
 $("pencil-btn").addEventListener("click",()=>{pencilMode=!pencilMode;$("pencil-btn").textContent=pencilMode?"Pencil: On":"Pencil: Off";});
 document.querySelectorAll(".num-btn").forEach(btn=>btn.addEventListener("click",()=>{
-  if(selectedIndex===null||givenIndices.has(selectedIndex)||(!soloMode&&!raceStarted))return;
+  if(gameOver||selectedIndex===null||givenIndices.has(selectedIndex)||(!soloMode&&!raceStarted))return;
   const cell=cells[selectedIndex],n=Number(btn.textContent);
   if(pencilMode){if(cell.number)return;cell.pencil.has(n)?cell.pencil.delete(n):cell.pencil.add(n);updatePencilDisplay(cell);return;}
   cell.number=n;cell.input.value=n;cell.pencil.clear();updatePencilDisplay(cell);highlightSelected(selectedIndex);checkMistakes();if(n!==solutionBoard[selectedIndex]){mistakeCount++;updateMistakeCounter();$("race-status").textContent=`That's a mistake! ${mistakeCount}/3`;if(mistakeCount>3){endForTooManyMistakes();return;}}if(!soloMode)updateProgress();checkCompletion();
