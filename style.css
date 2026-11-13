@@ -762,3 +762,56 @@ html, body {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
 }
+
+
+/* Compact New Puzzle dropdown */
+#new-puzzle-wrap {
+    position: relative;
+}
+#new-puzzle-btn {
+    border-radius: 999px;
+    padding: 7px 13px;
+    background-color: var(--pale-blue);
+    border-color: var(--soft-blue);
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+#new-puzzle-btn span {
+    margin-left: 3px;
+    font-size: 0.75em;
+}
+#difficulty-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 20;
+    min-width: 100%;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    background: #F8FAFC;
+    border: 1px solid var(--soft-blue);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(50, 60, 75, 0.16);
+}
+#difficulty-menu[hidden] {
+    display: none;
+}
+#difficulty-menu .new-puzzle-option {
+    width: 100%;
+    padding: 7px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    text-align: left;
+    font-size: 0.9rem;
+}
+#difficulty-menu .new-puzzle-option:hover,
+#difficulty-menu .new-puzzle-option:focus-visible {
+    background: var(--pale-blue);
+}
+@media(max-width:500px) {
+    #new-puzzle-btn { padding: 6px 10px; font-size: 0.85rem; }
+}
