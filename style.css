@@ -737,3 +737,15 @@ button,
 #game-subheader {
     margin-bottom: 6px;
 }
+
+
+/* Use one consistent text size throughout the game heading/status area.
+   Buttons and the main Sudoku Hehe title keep their own sizing. */
+#game-difficulty,
+#race-status,
+#new-puzzle-label,
+#timer,
+#mistake-label,
+#mistake-counter {
+    font-size: 1rem !important;
+}
