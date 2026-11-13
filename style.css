@@ -371,3 +371,96 @@ button:active {
     #toolbar-left, #toolbar-right { gap: 6px; }
     #home-game-btn { padding: 6px 18px; }
 }
+
+/* ------------------ PASTEL PINK / GRAY / BLUE THEME ------------------ */
+:root {
+    --pastel-pink: #FFE2E8;
+    --soft-pink: #FEBFC7;
+    --medium-gray: #B5B8B8;
+    --light-gray: #D4D4D4;
+    --soft-blue: #B4C9E1;
+    --pale-blue: #CCE7F6;
+    --ink: #45494D;
+}
+
+body {
+    background-color: var(--pastel-pink);
+    color: var(--ink);
+}
+
+/* Sudoku grid */
+.cell-wrapper {
+    border-color: var(--medium-gray);
+}
+.cell-wrapper input,
+.cell-wrapper.given input {
+    background-color: #FFFAFB;
+}
+.cell-wrapper.given input {
+    color: var(--ink);
+}
+.cell-wrapper:not(.given) input {
+    color: #6688B0;
+}
+.cell-wrapper.selected input {
+    background-color: var(--pale-blue);
+}
+.cell-wrapper.related input {
+    background-color: #EAF3F9;
+}
+.cell-wrapper.selected input {
+    background-color: var(--pale-blue);
+}
+.cell-wrapper.mistake input {
+    background-color: var(--soft-pink);
+}
+
+/* Buttons and controls */
+button,
+.num-btn,
+.pad-control {
+    color: var(--ink);
+    border-color: var(--medium-gray);
+    background-color: #FFFAFB;
+}
+button:hover,
+.num-btn:hover,
+.pad-control:hover {
+    background-color: var(--pale-blue);
+}
+.num-btn:active,
+.pad-control:active,
+button:active {
+    background-color: var(--soft-blue);
+}
+.pad-control.erase {
+    background-color: var(--pastel-pink);
+}
+#controls .diff-btn {
+    background-color: var(--pale-blue);
+    border-color: var(--soft-blue);
+}
+#controls .diff-btn:hover {
+    background-color: var(--soft-blue);
+}
+#home-game-btn {
+    background-color: var(--soft-blue);
+    border-color: var(--soft-blue);
+}
+#home-game-btn:hover {
+    background-color: var(--pale-blue);
+}
+
+/* Multiplayer panels */
+#opponent-progress {
+    background-color: var(--pale-blue);
+}
+#room-panel {
+    background-color: #FFFAFB;
+    border-color: var(--light-gray);
+}
+#signin-section input,
+#join-section input {
+    background-color: #FFFAFB;
+    border-color: var(--medium-gray);
+}
