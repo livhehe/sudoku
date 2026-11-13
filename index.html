@@ -67,14 +67,15 @@
           </div>
         </div>
       </div>
-      <div id="timer">0:00</div>
+      <div id="timer-group"><div id="timer">Time: 0:00</div><button id="pause-btn" type="button" aria-label="Pause puzzle" title="Pause puzzle">Ⅱ</button></div>
       <div id="mistake-panel">
         <div id="mistake-label">Mistakes</div>
         <div id="mistake-counter" aria-live="polite">0/3</div>
       </div>
     </div>
-    <div id="sudoku-board"></div>
-    <div id="number-pad">
+    <div id="puzzle-stage">
+      <div id="sudoku-board"></div>
+      <div id="number-pad">
       <button class="num-btn">1</button>
       <button class="num-btn">2</button>
       <button class="num-btn">3</button>
@@ -85,10 +86,15 @@
       <button class="num-btn">8</button>
       <button class="num-btn">9</button>
     </div>
-    <div id="pad-controls">
-      <button id="undo-btn" class="pad-control" type="button" disabled>Undo</button>
-      <button class="pad-control erase" type="button">Erase</button>
-      <button id="pencil-btn" class="pad-control">Pencil: Off</button>
+      <div id="pad-controls">
+        <button id="undo-btn" class="pad-control" type="button" disabled>Undo</button>
+        <button class="pad-control erase" type="button">Erase</button>
+        <button id="pencil-btn" class="pad-control">Pencil: Off</button>
+      </div>
+      <div id="pause-screen" aria-live="polite">
+        <div class="pause-title">Paused</div>
+        <button id="resume-btn" type="button">Resume Puzzle</button>
+      </div>
     </div>
   </div>
   <script type="module" src="./firebase-init.js"></script>
