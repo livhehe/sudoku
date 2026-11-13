@@ -175,7 +175,7 @@ function updatePauseUI(){
   const stage=$("puzzle-stage"),screen=$("pause-screen"),button=$("pause-btn");
   if(stage)stage.classList.toggle("paused",paused);
   if(screen)screen.style.display=paused?"flex":"none";
-  if(button){button.textContent=paused?"▶":"Ⅱ";button.setAttribute("aria-label",paused?"Resume puzzle":"Pause puzzle");button.title=paused?"Resume puzzle":"Pause puzzle";}
+  if(button){button.style.display=soloMode?"inline-flex":"none";button.textContent=paused?"▶":"Ⅱ";button.setAttribute("aria-label",paused?"Resume puzzle":"Pause puzzle");button.title=paused?"Resume puzzle":"Pause puzzle";}
 }
 function togglePause(){
   if(!soloMode||gameOver||completionSent)return;
