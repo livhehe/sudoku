@@ -700,9 +700,9 @@ button,
     #timer { font-size: 0.95rem; }
 }
 
-/* Keep the difficulty label out of the game header; show puzzle choices in one row */
+/* Show the solo/race difficulty beside Home; keep the centered status line for race messages only */
 #game-difficulty {
-    display: none !important;
+    display: block !important;
 }
 #controls {
     display: flex;
