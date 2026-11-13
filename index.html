@@ -48,22 +48,25 @@
 
   <div id="game-area" style="display:none;">
     <h1 id="game-title">Sudoku Hehe</h1>
-    <div id="game-difficulty" style="display:none;"></div>
     <div id="opponent-progress" style="display:none;"></div>
+    <div id="game-subheader">
+      <div id="game-difficulty">Solo Puzzle: Easy</div>
+      <button id="home-game-btn" type="button">Home</button>
+    </div>
+    <div id="race-status" aria-live="polite"></div>
     <div id="game-toolbar">
       <div id="toolbar-left">
-        <div id="race-status" aria-live="polite"></div>
-        <div id="mistake-counter" aria-live="polite">Mistakes: 0/3</div>
         <div id="controls">
-          <span id="new-puzzle-label">New puzzle:</span>
+          <span id="new-puzzle-label">New Puzzle</span>
           <button class="diff-btn" data-clues="40">Easy</button>
           <button class="diff-btn" data-clues="32">Medium</button>
           <button class="diff-btn" data-clues="26">Hard</button>
         </div>
       </div>
-      <div id="toolbar-right">
-        <button id="home-game-btn" type="button">Home</button>
-        <div id="timer">Time: 0:00</div>
+      <div id="timer">0:00</div>
+      <div id="mistake-panel">
+        <div id="mistake-label">Mistakes</div>
+        <div id="mistake-counter" aria-live="polite">0/3</div>
       </div>
     </div>
     <div id="sudoku-board"></div>
