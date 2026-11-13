@@ -213,7 +213,7 @@ function startSolo(clues=40){
     const puzzle=makePuzzle(sol,clues);
     if(!Array.isArray(puzzle) || puzzle.length!==81 || puzzle.every(n=>!n)) throw new Error("The puzzle generator returned an empty board.");
     renderPuzzle(puzzle,sol);
-    $("race-status").textContent="Solo puzzle";
+    $("race-status").textContent="";
     startTimer();
   } catch(error) {
     console.error("Could not start solo puzzle:",error);
