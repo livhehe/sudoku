@@ -46,16 +46,19 @@
   </div>
 
   <div id="game-area" style="display:none;">
-    <div id="game-difficulty" style="font-weight:bold; margin:8px 0;"></div>
-    <div id="race-status" aria-live="polite"></div>
+    <h1 id="game-title">Sudoku Hehe</h1>
     <button id="home-game-btn" type="button">Home</button>
+    <div id="game-difficulty" style="display:none;"></div>
+    <div id="race-status" aria-live="polite"></div>
     <div id="opponent-progress" style="display:none;"></div>
-    <div id="timer">Time: 0:00</div>
-    <div id="controls">
-      <span id="new-puzzle-label">New puzzle:</span>
-      <button class="diff-btn" data-clues="40">Easy</button>
-      <button class="diff-btn" data-clues="32">Medium</button>
-      <button class="diff-btn" data-clues="26">Hard</button>
+    <div id="game-toolbar">
+      <div id="controls">
+        <span id="new-puzzle-label">New puzzle:</span>
+        <button class="diff-btn" data-clues="40">Easy</button>
+        <button class="diff-btn" data-clues="32">Medium</button>
+        <button class="diff-btn" data-clues="26">Hard</button>
+      </div>
+      <div id="timer">Time: 0:00</div>
     </div>
     <div id="sudoku-board"></div>
     <div id="number-pad">
