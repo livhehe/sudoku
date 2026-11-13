@@ -4,7 +4,7 @@ const leaderboardList=$("leaderboard-list"), gameArea=$("game-area"), board=$("s
 const dbApi=()=>window.firebaseApp;
 let currentUser=null, username="", roomId=null, roomUnsubscribe=null, roomData=null, myRole=null;
 let cells=[], selectedIndex=null, givenIndices=new Set(), timerInterval=null, startTime=null, solutionBoard=[], pencilMode=false, moveHistory=[];
-let soloMode=true, raceStarted=false, completionSent=false;
+let soloMode=true, raceStarted=false, completionSent=false, paused=false, elapsedSeconds=0;
 
 function makeBoard(){
   board.innerHTML=""; cells=[];
@@ -53,6 +53,7 @@ function makePuzzle(solution,clues=36){
   return puzzle;
 }
 function renderPuzzle(puzzle,solution){
+  paused=false;elapsedSeconds=0;updatePauseUI();
   solutionBoard=solution.slice();givenIndices.clear();completionSent=false;mistakeCount=0;gameOver=false;moveHistory=[];updateMistakeCounter();updateUndoButton();
   cells.forEach((cell,i)=>{cell.number=puzzle[i];cell.input.value=puzzle[i]||"";cell.pencil.clear();updatePencilDisplay(cell);cell.wrapper.classList.remove("given","mistake");if(puzzle[i]){givenIndices.add(i);cell.wrapper.classList.add("given");}});
   selectedIndex=null;highlightSelected(-1);checkMistakes();updateNumberPad();
@@ -163,11 +164,25 @@ function checkCompletion(){
   const api=dbApi();const ref=api.doc(api.db,"rooms",roomId);
   api.runTransaction(api.db,async tx=>{const snap=await tx.get(ref);const data=snap.data();if(data.status==="running"&&!data.winnerUid)tx.update(ref,{status:"finished",winnerUid:currentUser.uid,finishedAt:Date.now()});}).catch(console.error);
 }
+function formatTime(seconds){return "Time: "+Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0");}
 function startTimer(at=Date.now()){
   stopTimer();startTime=at;
-  timerInterval=setInterval(()=>{const s=Math.max(0,Math.floor((Date.now()-startTime)/1000));timerDisplay.textContent=`Time: ${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;},250);
+  timerInterval=setInterval(()=>{const s=Math.max(0,Math.floor((Date.now()-startTime)/1000));timerDisplay.textContent=formatTime(s);},250);
+  timerDisplay.textContent=formatTime(Math.max(0,Math.floor((Date.now()-startTime)/1000)));
 }
 function stopTimer(){if(timerInterval)clearInterval(timerInterval);timerInterval=null;}
+function updatePauseUI(){
+  const stage=$("puzzle-stage"),screen=$("pause-screen"),button=$("pause-btn");
+  if(stage)stage.classList.toggle("paused",paused);
+  if(screen)screen.style.display=paused?"flex":"none";
+  if(button){button.textContent=paused?"▶":"Ⅱ";button.setAttribute("aria-label",paused?"Resume puzzle":"Pause puzzle");button.title=paused?"Resume puzzle":"Pause puzzle";}
+}
+function togglePause(){
+  if(!soloMode||gameOver||completionSent)return;
+  if(paused){paused=false;startTimer(Date.now()-elapsedSeconds*1000);}
+  else{elapsedSeconds=Math.max(0,Math.floor((Date.now()-startTime)/1000));paused=true;stopTimer();timerDisplay.textContent=formatTime(elapsedSeconds);}
+  updatePauseUI();
+}
 function showGame(){gameArea.style.display="block";$("home-container").style.display="none";}
 function showMenu(){
   stopTimer();
@@ -245,6 +260,7 @@ function startSolo(clues=40){
     roomData=null;
     soloMode=true;
     raceStarted=true;
+    paused=false;elapsedSeconds=0;updatePauseUI();
     completionSent=false;
     if(cells.length!==81 || board.children.length!==81) makeBoard();
     showGame();
@@ -289,6 +305,8 @@ document.addEventListener("click",event=>{if(!event.target.closest("#new-puzzle-
 document.addEventListener("keydown",event=>{if(event.key==="Escape"){difficultyMenu.hidden=true;newPuzzleBtn.setAttribute("aria-expanded","false");}});
 $("pencil-btn").addEventListener("click",()=>{pencilMode=!pencilMode;$("pencil-btn").textContent=pencilMode?"Pencil: On":"Pencil: Off";});
 $("undo-btn").addEventListener("click",undoMove);
+$("pause-btn").addEventListener("click",togglePause);
+$("resume-btn").addEventListener("click",()=>{if(paused)togglePause();});
 document.querySelectorAll(".num-btn").forEach(btn=>btn.addEventListener("click",()=>{
   if(gameOver||selectedIndex===null||givenIndices.has(selectedIndex)||(!soloMode&&!raceStarted))return;
   const cell=cells[selectedIndex],n=Number(btn.textContent);
