@@ -253,3 +253,80 @@ button:hover {
 #controls{flex-wrap:wrap;justify-content:center}
 #sudoku-board{touch-action:manipulation}
 @media(max-width:500px){#controls button{font-size:.85rem;padding:7px}#home-container h1{font-size:2rem}}
+
+
+/* Polished in-game layout */
+button {
+    border-radius: 10px;
+    transition: background-color 0.15s ease, transform 0.15s ease;
+}
+button:active {
+    transform: translateY(1px);
+}
+#game-area {
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+}
+#game-title {
+    font-size: clamp(2.5rem, 7vw, 3.5rem);
+    line-height: 1.1;
+    margin: 8px 0 12px;
+    text-align: center;
+    font-weight: 700;
+}
+#home-game-btn {
+    border-radius: 999px;
+    padding: 8px 28px;
+    margin: 0 0 14px;
+    font-weight: 600;
+}
+#game-difficulty {
+    display: none !important;
+}
+#race-status {
+    margin: 4px 0 10px;
+}
+#game-toolbar {
+    width: 90vw;
+    max-width: 540px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 4px auto 10px;
+    min-height: 38px;
+}
+#controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 6px;
+    margin: 0;
+}
+#new-puzzle-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+#controls .diff-btn {
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+}
+#timer {
+    margin: 0;
+    white-space: nowrap;
+    font-size: 1.05rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+@media(max-width:500px) {
+    #game-title { font-size: 2.35rem; }
+    #game-toolbar { gap: 6px; }
+    #controls { gap: 4px; }
+    #new-puzzle-label { font-size: 0.78rem; }
+    #controls .diff-btn { padding: 6px 9px; font-size: 0.8rem; }
+    #timer { font-size: 0.9rem; }
+}
