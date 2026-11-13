@@ -74,7 +74,16 @@ function startTimer(at=Date.now()){
 }
 function stopTimer(){if(timerInterval)clearInterval(timerInterval);timerInterval=null;}
 function showGame(){gameArea.style.display="block";$("home-container").style.display="none";}
-function showMenu(){stopTimer();gameArea.style.display="none";$("home-container").style.display="block";}
+function showMenu(){
+  stopTimer();
+  gameArea.style.display="none";
+  $("home-container").style.display="block";
+  $("solo-btn").style.display="";
+  $("share-btn").style.display="";
+  $("race-setup-section").style.display="none";
+  $("join-section").style.display="none";
+  $("room-panel").style.display="none";
+}
 function showRaceRoom(){ $("room-panel").style.display="block";$("room-code-display").textContent=roomId||""; }
 function clearRoomWatch(){if(roomUnsubscribe){roomUnsubscribe();roomUnsubscribe=null;}}
 function watchRoom(){
@@ -164,7 +173,14 @@ function startSolo(clues=40){
 }
 signinBtn.addEventListener("click",signIn);
 $("solo-btn").addEventListener("click",()=>startSolo(40));
-$("share-btn").addEventListener("click",()=>{$("race-difficulty-section").style.display=$("race-difficulty-section").style.display==="none"?"block":"none";});
+$("share-btn").addEventListener("click",()=>{
+  $("solo-btn").style.display="none";
+  $("share-btn").style.display="none";
+  $("race-setup-section").style.display="flex";
+  $("enter-code-btn").style.display="";
+  $("join-section").style.display="none";
+});
+$("race-back-btn").addEventListener("click",showMenu);
 document.querySelectorAll(".race-difficulty-btn").forEach(btn=>btn.addEventListener("click",async()=>{try{$("race-difficulty-section").style.display="none";await createRoom(Number(btn.dataset.clues),btn.dataset.difficulty);}catch(e){alert(e.message);}}));
 $("enter-code-btn").addEventListener("click",()=>$("join-section").style.display="block");
 $("join-room-btn").addEventListener("click",async()=>{try{await joinRoom($("room-code-input").value);}catch(e){alert(e.message);}});
