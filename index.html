@@ -57,11 +57,13 @@
     <div id="game-toolbar">
       <div id="toolbar-left">
         <div id="controls">
-          <span id="new-puzzle-label">New Puzzle</span>
-          <div id="difficulty-buttons">
-            <button class="diff-btn" data-clues="40">Easy</button>
-            <button class="diff-btn" data-clues="32">Medium</button>
-            <button class="diff-btn" data-clues="26">Hard</button>
+          <div id="new-puzzle-wrap">
+            <button id="new-puzzle-btn" type="button" aria-haspopup="true" aria-expanded="false">New Puzzle <span aria-hidden="true">▾</span></button>
+            <div id="difficulty-menu" role="group" aria-label="Choose puzzle difficulty" hidden>
+              <button class="new-puzzle-option" type="button" data-clues="40">Easy</button>
+              <button class="new-puzzle-option" type="button" data-clues="32">Medium</button>
+              <button class="new-puzzle-option" type="button" data-clues="26">Hard</button>
+            </div>
           </div>
         </div>
       </div>
