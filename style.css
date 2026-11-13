@@ -749,3 +749,16 @@ button,
 #mistake-counter {
     font-size: 1rem !important;
 }
+
+
+/* Keep mobile taps on Sudoku cells from moving the page. The cells are
+   selected by the wrapper, so their read-only inputs do not need focus. */
+html, body {
+    overflow-anchor: none;
+}
+#sudoku-board,
+#sudoku-board .cell-wrapper,
+#sudoku-board .cell-wrapper input {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
