@@ -3,7 +3,7 @@ const usernameInput=$("username-input"), signinBtn=$("signin-btn"), menuSection=
 const leaderboardList=$("leaderboard-list"), gameArea=$("game-area"), board=$("sudoku-board"), timerDisplay=$("timer");
 const dbApi=()=>window.firebaseApp;
 let currentUser=null, username="", roomId=null, roomUnsubscribe=null, roomData=null, myRole=null;
-let cells=[], selectedIndex=null, givenIndices=new Set(), timerInterval=null, startTime=null, solutionBoard=[], pencilMode=false;
+let cells=[], selectedIndex=null, givenIndices=new Set(), timerInterval=null, startTime=null, solutionBoard=[], pencilMode=false, moveHistory=[];
 let soloMode=true, raceStarted=false, completionSent=false;
 
 function makeBoard(){
@@ -53,7 +53,7 @@ function makePuzzle(solution,clues=36){
   return puzzle;
 }
 function renderPuzzle(puzzle,solution){
-  solutionBoard=solution.slice();givenIndices.clear();completionSent=false;mistakeCount=0;gameOver=false;updateMistakeCounter();
+  solutionBoard=solution.slice();givenIndices.clear();completionSent=false;mistakeCount=0;gameOver=false;moveHistory=[];updateMistakeCounter();updateUndoButton();
   cells.forEach((cell,i)=>{cell.number=puzzle[i];cell.input.value=puzzle[i]||"";cell.pencil.clear();updatePencilDisplay(cell);cell.wrapper.classList.remove("given","mistake");if(puzzle[i]){givenIndices.add(i);cell.wrapper.classList.add("given");}});
   selectedIndex=null;highlightSelected(-1);checkMistakes();updateNumberPad();
 }
@@ -84,6 +84,32 @@ let mistakeCount=0, gameOver=false;
 function updateMistakeCounter(){
   const counter=$("mistake-counter");
   if(counter)counter.textContent=`${mistakeCount}/3`;
+}
+function updateUndoButton(){
+  const button=$("undo-btn");
+  if(button)button.disabled=moveHistory.length===0;
+}
+function rememberMove(index){
+  const cell=cells[index];
+  moveHistory.push({index,number:cell.number,pencil:[...cell.pencil],mistakeCount});
+  updateUndoButton();
+}
+function undoMove(){
+  if(!moveHistory.length||gameOver)return;
+  const previous=moveHistory.pop();
+  const cell=cells[previous.index];
+  cell.number=previous.number;
+  cell.input.value=previous.number||"";
+  cell.pencil=new Set(previous.pencil);
+  mistakeCount=previous.mistakeCount;
+  selectedIndex=previous.index;
+  updatePencilDisplay(cell);
+  highlightSelected(selectedIndex);
+  updateMistakeCounter();
+  checkMistakes();
+  updateNumberPad();
+  updateUndoButton();
+  if(!soloMode)updateProgress();
 }
 function updateNumberPad(){
   const counts=Array(10).fill(0);
@@ -253,12 +279,13 @@ document.querySelectorAll(".new-puzzle-option").forEach(btn=>btn.addEventListene
 document.addEventListener("click",event=>{if(!event.target.closest("#new-puzzle-wrap")){difficultyMenu.hidden=true;newPuzzleBtn.setAttribute("aria-expanded","false");}});
 document.addEventListener("keydown",event=>{if(event.key==="Escape"){difficultyMenu.hidden=true;newPuzzleBtn.setAttribute("aria-expanded","false");}});
 $("pencil-btn").addEventListener("click",()=>{pencilMode=!pencilMode;$("pencil-btn").textContent=pencilMode?"Pencil: On":"Pencil: Off";});
+$("undo-btn").addEventListener("click",undoMove);
 document.querySelectorAll(".num-btn").forEach(btn=>btn.addEventListener("click",()=>{
   if(gameOver||selectedIndex===null||givenIndices.has(selectedIndex)||(!soloMode&&!raceStarted))return;
   const cell=cells[selectedIndex],n=Number(btn.textContent);
-  if(pencilMode){if(cell.number)return;cell.pencil.has(n)?cell.pencil.delete(n):cell.pencil.add(n);updatePencilDisplay(cell);return;}
-  cell.number=n;cell.input.value=n;cell.pencil.clear();updatePencilDisplay(cell);highlightSelected(selectedIndex);checkMistakes();updateNumberPad();if(n!==solutionBoard[selectedIndex]){mistakeCount++;updateMistakeCounter();if(mistakeCount>3){endForTooManyMistakes();return;}}if(!soloMode)updateProgress();checkCompletion();
+  if(pencilMode){if(cell.number)return;rememberMove(selectedIndex);cell.pencil.has(n)?cell.pencil.delete(n):cell.pencil.add(n);updatePencilDisplay(cell);return;}
+  rememberMove(selectedIndex);cell.number=n;cell.input.value=n;cell.pencil.clear();updatePencilDisplay(cell);highlightSelected(selectedIndex);checkMistakes();updateNumberPad();if(n!==solutionBoard[selectedIndex]){mistakeCount++;updateMistakeCounter();if(mistakeCount>3){endForTooManyMistakes();return;}}if(!soloMode)updateProgress();checkCompletion();
 }));
-document.querySelector(".pad-control.erase").addEventListener("click",()=>{if(selectedIndex===null||givenIndices.has(selectedIndex))return;const c=cells[selectedIndex];c.number=0;c.input.value="";c.pencil.clear();updatePencilDisplay(c);highlightSelected(selectedIndex);checkMistakes();updateNumberPad();if(!soloMode)updateProgress();});
+document.querySelector(".pad-control.erase").addEventListener("click",()=>{if(selectedIndex===null||givenIndices.has(selectedIndex))return;const c=cells[selectedIndex];if(!c.number&&!c.pencil.size)return;rememberMove(selectedIndex);c.number=0;c.input.value="";c.pencil.clear();updatePencilDisplay(c);highlightSelected(selectedIndex);checkMistakes();updateNumberPad();if(!soloMode)updateProgress();});
 window.addEventListener("beforeunload",()=>{if(roomId&&currentUser&&dbApi())dbApi().updateDoc(dbApi().doc(dbApi().db,"rooms",roomId),{[`players.${currentUser.uid}.left`]:true}).catch(()=>{});});
 makeBoard();
