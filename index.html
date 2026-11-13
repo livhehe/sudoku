@@ -17,6 +17,12 @@
       <p id="welcome-message"></p>
       <button id="solo-btn">Solo Game</button>
       <button id="share-btn">Create Race</button>
+      <div id="race-difficulty-section" style="display:none;">
+        <p>Choose race difficulty:</p>
+        <button class="race-difficulty-btn" data-difficulty="Easy" data-clues="40">Easy</button>
+        <button class="race-difficulty-btn" data-difficulty="Medium" data-clues="32">Medium</button>
+        <button class="race-difficulty-btn" data-difficulty="Hard" data-clues="26">Hard</button>
+      </div>
       <button id="enter-code-btn">Join Race</button>
       <div id="join-section" style="display:none;">
         <input id="room-code-input" maxlength="5" placeholder="5-character code" autocomplete="off">
@@ -37,6 +43,7 @@
   </div>
 
   <div id="game-area" style="display:none;">
+    <div id="game-difficulty" style="font-weight:bold; margin:8px 0;"></div>
     <div id="race-status" aria-live="polite"></div>
     <button id="leave-race-game-btn" type="button" style="display:none;">Leave Race</button>
     <div id="opponent-progress" style="display:none;"></div>
