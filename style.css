@@ -728,3 +728,12 @@ button,
         font-size: 0.75rem;
     }
 }
+
+
+/* Collapse the status row when it has no message, removing the extra gap */
+#race-status:empty {
+    display: none;
+}
+#game-subheader {
+    margin-bottom: 6px;
+}
