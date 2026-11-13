@@ -548,3 +548,37 @@ button,
 .cell-wrapper.selected.given input {
     background-color: var(--pale-blue);
 }
+
+
+/* Race setup: match the compact, evenly spaced puzzle difficulty pills */
+#race-setup-section {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    width: min(100%, 340px);
+    margin: 4px auto 8px;
+}
+#race-setup-section .race-difficulty-btn,
+#race-setup-section #race-back-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    background-color: var(--pale-blue, #CCE7F6);
+    border-color: var(--soft-blue, #B4C9E1);
+}
+#race-setup-section .race-difficulty-btn:hover,
+#race-setup-section #race-back-btn:hover {
+    background-color: var(--soft-blue, #B4C9E1);
+}
+@media(max-width:500px) {
+    #race-setup-section { gap: 4px; width: min(100%, 320px); }
+    #race-setup-section .race-difficulty-btn,
+    #race-setup-section #race-back-btn { padding: 6px 8px; font-size: 0.8rem; }
+}
