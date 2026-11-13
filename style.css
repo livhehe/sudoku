@@ -587,3 +587,12 @@ button,
     #race-setup-section .race-difficulty-btn,
     #race-setup-section #race-back-btn { padding: 7px 12px; font-size: 0.85rem; }
 }
+
+
+/* Given clues are regular weight until their number is selected */
+.cell-wrapper.given input {
+    font-weight: 400;
+}
+.cell-wrapper.same-number input {
+    font-weight: 700;
+}
