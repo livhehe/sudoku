@@ -20,8 +20,10 @@ function makeBoard(){
   }
 }
 function highlightSelected(index){
+  const selectedNumber=index>=0?cells[index]?.number||0:0;
   cells.forEach((c,i)=>{
-    c.wrapper.classList.remove("selected","related");
+    c.wrapper.classList.remove("selected","related","same-number");
+    if(selectedNumber&&c.number===selectedNumber)c.wrapper.classList.add("same-number");
     if(index<0)return;
     const row=Math.floor(i/9),col=i%9;
     const selectedRow=Math.floor(index/9),selectedCol=index%9;
@@ -193,8 +195,8 @@ document.querySelectorAll(".num-btn").forEach(btn=>btn.addEventListener("click",
   if(selectedIndex===null||givenIndices.has(selectedIndex)||(!soloMode&&!raceStarted))return;
   const cell=cells[selectedIndex],n=Number(btn.textContent);
   if(pencilMode){if(cell.number)return;cell.pencil.has(n)?cell.pencil.delete(n):cell.pencil.add(n);updatePencilDisplay(cell);return;}
-  cell.number=n;cell.input.value=n;cell.pencil.clear();updatePencilDisplay(cell);checkMistakes();if(!soloMode)updateProgress();checkCompletion();
+  cell.number=n;cell.input.value=n;cell.pencil.clear();updatePencilDisplay(cell);highlightSelected(selectedIndex);checkMistakes();if(!soloMode)updateProgress();checkCompletion();
 }));
-document.querySelector(".pad-control.erase").addEventListener("click",()=>{if(selectedIndex===null||givenIndices.has(selectedIndex))return;const c=cells[selectedIndex];c.number=0;c.input.value="";c.pencil.clear();updatePencilDisplay(c);checkMistakes();if(!soloMode)updateProgress();});
+document.querySelector(".pad-control.erase").addEventListener("click",()=>{if(selectedIndex===null||givenIndices.has(selectedIndex))return;const c=cells[selectedIndex];c.number=0;c.input.value="";c.pencil.clear();updatePencilDisplay(c);highlightSelected(selectedIndex);checkMistakes();if(!soloMode)updateProgress();});
 window.addEventListener("beforeunload",()=>{if(roomId&&currentUser&&dbApi())dbApi().updateDoc(dbApi().doc(dbApi().db,"rooms",roomId),{[`players.${currentUser.uid}.left`]:true}).catch(()=>{});});
 makeBoard();
