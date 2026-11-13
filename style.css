@@ -857,3 +857,9 @@ body {
     opacity: 0.45;
     cursor: default;
 }
+
+
+/* Darken player-entered puzzle numbers slightly for clearer contrast. */
+.cell-wrapper:not(.given) input {
+    color: #4F6F98;
+}
