@@ -505,3 +505,23 @@ button,
 #home-game-btn {
     background-color: var(--soft-blue);
 }
+
+/* Match Home to the difficulty pills; brighten the main menu actions */
+#home-game-btn {
+    background-color: var(--pale-blue);
+    border-color: var(--soft-blue);
+}
+#home-game-btn:hover {
+    background-color: var(--soft-blue);
+}
+#menu-section > #solo-btn,
+#menu-section > #share-btn,
+#menu-section > #enter-code-btn {
+    background-color: #FFFFFF;
+    border-color: var(--soft-blue);
+}
+#menu-section > #solo-btn:hover,
+#menu-section > #share-btn:hover,
+#menu-section > #enter-code-btn:hover {
+    background-color: var(--pale-blue);
+}
