@@ -26,7 +26,22 @@ function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor
 function safe(b,i,n){const r=Math.floor(i/9),c=i%9;for(let x=0;x<9;x++)if(b[r*9+x]===n||b[x*9+c]===n)return false;const br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;for(let y=0;y<3;y++)for(let x=0;x<3;x++)if(b[(br+y)*9+bc+x]===n)return false;return true;}
 function generateSolution(){const b=Array(81).fill(0);function fill(i=0){if(i===81)return true;for(const n of shuffle([1,2,3,4,5,6,7,8,9]))if(safe(b,i,n)){b[i]=n;if(fill(i+1))return true;b[i]=0;}return false;}fill();return b;}
 function countSolutions(input,limit=2){const b=input.slice();let count=0;function fill(i=0){while(i<81&&b[i])i++;if(i===81){count++;return count>=limit;}for(let n=1;n<=9;n++)if(safe(b,i,n)){b[i]=n;if(fill(i+1))return true;b[i]=0;}return false;}fill();return count;}
-function makePuzzle(solution,clues=36){const p=solution.slice();for(const i of shuffle([...Array(81).keys()])){const old=p[i];p[i]=0;if(countSolutions(p)!==1)p[i]=old;else if(p.filter(Boolean).length<=clues)break;}return p;}
+function makePuzzle(solution,clues=36){
+  const puzzle=solution.slice();
+  const targetRemovals=81-clues;
+  let removals=0;
+  for(const index of shuffle([...Array(81).keys()])){
+    const original=puzzle[index];
+    puzzle[index]=0;
+    if(countSolutions(puzzle,2)===1){
+      removals++;
+      if(removals>=targetRemovals) break;
+    } else {
+      puzzle[index]=original;
+    }
+  }
+  return puzzle;
+}
 function renderPuzzle(puzzle,solution){
   solutionBoard=solution.slice();givenIndices.clear();completionSent=false;
   cells.forEach((cell,i)=>{cell.number=puzzle[i];cell.input.value=puzzle[i]||"";cell.pencil.clear();updatePencilDisplay(cell);cell.wrapper.classList.remove("given","mistake");if(puzzle[i]){givenIndices.add(i);cell.wrapper.classList.add("given");}});
@@ -118,14 +133,16 @@ function startSolo(clues=36){
     soloMode=true;
     raceStarted=true;
     completionSent=false;
-    if(cells.length!==81) makeBoard();
+    if(cells.length!==81 || board.children.length!==81) makeBoard();
     showGame();
     $("game-area").style.display="flex";
     $("game-difficulty").textContent=`Difficulty: ${clues===40?"Easy":clues===32?"Medium":clues===26?"Hard":"Custom"}`;
     $("race-status").textContent="Generating puzzle…";
     $("opponent-progress").style.display="none";
     const sol=generateSolution();
+    if(!Array.isArray(sol) || sol.length!==81 || sol.some(n=>!n)) throw new Error("The solution generator returned an incomplete board.");
     const puzzle=makePuzzle(sol,clues);
+    if(!Array.isArray(puzzle) || puzzle.length!==81 || puzzle.every(n=>!n)) throw new Error("The puzzle generator returned an empty board.");
     renderPuzzle(puzzle,sol);
     $("race-status").textContent="Solo puzzle";
     startTimer();
