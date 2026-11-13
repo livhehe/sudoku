@@ -237,7 +237,11 @@ $("join-room-btn").addEventListener("click",async()=>{try{await joinRoom($("room
 $("copy-code-btn").addEventListener("click",()=>navigator.clipboard?.writeText(roomId).then(()=>alert("Room code copied!")).catch(()=>alert("Room code: "+roomId)));
 $("leave-room-btn").addEventListener("click",()=>leaveRoom());
 $("home-game-btn").addEventListener("click",async()=>{if(roomId&&!soloMode){await leaveRoom();}else{stopTimer();showMenu();}});
-document.querySelectorAll(".diff-btn").forEach(btn=>btn.addEventListener("click",()=>{if(soloMode)startSolo(Number(btn.dataset.clues));else alert("Difficulty is chosen when the race is created.");}));
+const newPuzzleBtn=$("new-puzzle-btn"),difficultyMenu=$("difficulty-menu");
+newPuzzleBtn.addEventListener("click",()=>{if(!soloMode)return;const opening=difficultyMenu.hidden;difficultyMenu.hidden=!opening;newPuzzleBtn.setAttribute("aria-expanded",String(opening));});
+document.querySelectorAll(".new-puzzle-option").forEach(btn=>btn.addEventListener("click",()=>{difficultyMenu.hidden=true;newPuzzleBtn.setAttribute("aria-expanded","false");startSolo(Number(btn.dataset.clues));}));
+document.addEventListener("click",event=>{if(!event.target.closest("#new-puzzle-wrap")){difficultyMenu.hidden=true;newPuzzleBtn.setAttribute("aria-expanded","false");}});
+document.addEventListener("keydown",event=>{if(event.key==="Escape"){difficultyMenu.hidden=true;newPuzzleBtn.setAttribute("aria-expanded","false");}});
 $("pencil-btn").addEventListener("click",()=>{pencilMode=!pencilMode;$("pencil-btn").textContent=pencilMode?"Pencil: On":"Pencil: Off";});
 document.querySelectorAll(".num-btn").forEach(btn=>btn.addEventListener("click",()=>{
   if(gameOver||selectedIndex===null||givenIndices.has(selectedIndex)||(!soloMode&&!raceStarted))return;
