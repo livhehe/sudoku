@@ -257,7 +257,7 @@ document.querySelectorAll(".num-btn").forEach(btn=>btn.addEventListener("click",
   if(gameOver||selectedIndex===null||givenIndices.has(selectedIndex)||(!soloMode&&!raceStarted))return;
   const cell=cells[selectedIndex],n=Number(btn.textContent);
   if(pencilMode){if(cell.number)return;cell.pencil.has(n)?cell.pencil.delete(n):cell.pencil.add(n);updatePencilDisplay(cell);return;}
-  cell.number=n;cell.input.value=n;cell.pencil.clear();updatePencilDisplay(cell);highlightSelected(selectedIndex);checkMistakes();updateNumberPad();if(n!==solutionBoard[selectedIndex]){mistakeCount++;updateMistakeCounter();$("race-status").textContent=`That's a mistake! ${mistakeCount}/3`;if(mistakeCount>3){endForTooManyMistakes();return;}}if(!soloMode)updateProgress();checkCompletion();
+  cell.number=n;cell.input.value=n;cell.pencil.clear();updatePencilDisplay(cell);highlightSelected(selectedIndex);checkMistakes();updateNumberPad();if(n!==solutionBoard[selectedIndex]){mistakeCount++;updateMistakeCounter();if(mistakeCount>3){endForTooManyMistakes();return;}}if(!soloMode)updateProgress();checkCompletion();
 }));
 document.querySelector(".pad-control.erase").addEventListener("click",()=>{if(selectedIndex===null||givenIndices.has(selectedIndex))return;const c=cells[selectedIndex];c.number=0;c.input.value="";c.pencil.clear();updatePencilDisplay(c);highlightSelected(selectedIndex);checkMistakes();updateNumberPad();if(!soloMode)updateProgress();});
 window.addEventListener("beforeunload",()=>{if(roomId&&currentUser&&dbApi())dbApi().updateDoc(dbApi().doc(dbApi().db,"rooms",roomId),{[`players.${currentUser.uid}.left`]:true}).catch(()=>{});});
