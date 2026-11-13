@@ -815,3 +815,16 @@ html, body {
 @media(max-width:500px) {
     #new-puzzle-btn { padding: 6px 10px; font-size: 0.85rem; }
 }
+
+
+/* Keep the mistakes label and count together on one line. */
+#mistake-panel {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    white-space: nowrap;
+}
+#mistake-counter {
+    min-height: 0;
+}
