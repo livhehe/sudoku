@@ -550,23 +550,28 @@ button,
 }
 
 
-/* Race setup: match the compact, evenly spaced puzzle difficulty pills */
+/* Race setup: keep the heading on its own line and give every button room */
 #race-setup-section {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 6px;
-    width: min(100%, 340px);
+    gap: 8px;
+    width: min(100%, 390px);
     margin: 4px auto 8px;
+}
+#race-setup-section > p {
+    flex: 0 0 100%;
+    margin: 0 0 4px;
+    text-align: center;
 }
 #race-setup-section .race-difficulty-btn,
 #race-setup-section #race-back-btn {
-    flex: 1 1 0;
-    min-width: 0;
+    flex: 0 0 auto;
+    min-width: 76px;
     box-sizing: border-box;
-    padding: 7px 12px;
+    padding: 8px 15px;
     border-radius: 999px;
     font-size: 0.9rem;
     white-space: nowrap;
@@ -578,7 +583,7 @@ button,
     background-color: var(--soft-blue, #B4C9E1);
 }
 @media(max-width:500px) {
-    #race-setup-section { gap: 4px; width: min(100%, 320px); }
+    #race-setup-section { gap: 6px; width: min(100%, 360px); }
     #race-setup-section .race-difficulty-btn,
-    #race-setup-section #race-back-btn { padding: 6px 8px; font-size: 0.8rem; }
+    #race-setup-section #race-back-btn { padding: 7px 12px; font-size: 0.85rem; }
 }
