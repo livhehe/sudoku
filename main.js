@@ -60,6 +60,7 @@ function watchRoom(){
 }
 function renderRoomState(){
   const players=Object.entries(roomData.players||{});
+  $("game-difficulty").textContent=`Difficulty: ${roomData.difficulty||"Custom"}`;
   $("race-players").innerHTML=players.map(([uid,p])=>`<div>${escapeHtml(p.username)} ${uid===currentUser.uid?"(you)":""}</div>`).join("");
   const opponent=players.find(([uid])=>uid!==currentUser.uid);
   $("room-status").textContent=roomData.status==="waiting"?"Waiting for another player…":roomData.status==="countdown"?"Both players are in. Get ready!":roomData.status==="running"?"Race in progress!":roomData.status==="finished"?`${roomData.players[roomData.winnerUid]?.username||"Someone"} won!`:"Room ready";
@@ -86,10 +87,10 @@ function renderRoomState(){
   }
 }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-async function createRoom(){
-  const api=dbApi();const solution=generateSolution();const puzzle=makePuzzle(solution,36);const code=Array.from(crypto.getRandomValues(new Uint8Array(5)),x=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[x%32]).join("");
+async function createRoom(clues,difficulty){
+  const api=dbApi();const solution=generateSolution();const puzzle=makePuzzle(solution,clues);const code=Array.from(crypto.getRandomValues(new Uint8Array(5)),x=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[x%32]).join("");
   const ref=api.doc(api.db,"rooms",code);
-  await api.setDoc(ref,{code,status:"waiting",puzzle,solution,createdAt:Date.now(),players:{[currentUser.uid]:{username,progress:0}}});
+  await api.setDoc(ref,{code,status:"waiting",puzzle,solution,difficulty,createdAt:Date.now(),players:{[currentUser.uid]:{username,progress:0}}});
   roomId=code;myRole="host";soloMode=false;raceStarted=false;roomData=null;showRaceRoom();watchRoom();
 }
 async function joinRoom(code){
@@ -109,10 +110,11 @@ async function signIn(){
 async function loadLeaderboard(){
   try{const api=dbApi();const q=api.query(api.collection(api.db,"users"),api.orderBy("points","desc"),api.limit(10));const snap=await api.getDocs(q);leaderboardList.innerHTML="";snap.forEach(d=>{const li=document.createElement("li");li.textContent=`${d.data().username||"Anonymous"}: ${d.data().points||0}`;leaderboardList.appendChild(li);});}catch(e){console.warn("Leaderboard unavailable:",e);}
 }
-function startSolo(clues=36){clearRoomWatch();roomId=null;soloMode=true;raceStarted=true;showGame();$("race-status").textContent="Solo puzzle";$("opponent-progress").style.display="none";const sol=generateSolution();renderPuzzle(makePuzzle(sol,clues),sol);startTimer();}
+function startSolo(clues=36){clearRoomWatch();roomId=null;soloMode=true;raceStarted=true;showGame();$("game-difficulty").textContent=`Difficulty: ${clues===40?"Easy":clues===32?"Medium":clues===26?"Hard":"Custom"}`;$("race-status").textContent="Solo puzzle";$("opponent-progress").style.display="none";const sol=generateSolution();renderPuzzle(makePuzzle(sol,clues),sol);startTimer();}
 signinBtn.addEventListener("click",signIn);
 $("solo-btn").addEventListener("click",()=>startSolo());
-$("share-btn").addEventListener("click",async()=>{try{await createRoom();}catch(e){alert(e.message);}});
+$("share-btn").addEventListener("click",()=>{$("race-difficulty-section").style.display=$("race-difficulty-section").style.display==="none"?"block":"none";});
+document.querySelectorAll(".race-difficulty-btn").forEach(btn=>btn.addEventListener("click",async()=>{try{$("race-difficulty-section").style.display="none";await createRoom(Number(btn.dataset.clues),btn.dataset.difficulty);}catch(e){alert(e.message);}}));
 $("enter-code-btn").addEventListener("click",()=>$("join-section").style.display="block");
 $("join-room-btn").addEventListener("click",async()=>{try{await joinRoom($("room-code-input").value);}catch(e){alert(e.message);}});
 $("copy-code-btn").addEventListener("click",()=>navigator.clipboard?.writeText(roomId).then(()=>alert("Room code copied!")).catch(()=>alert("Room code: "+roomId)));
