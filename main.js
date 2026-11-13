@@ -125,7 +125,7 @@ async function signIn(){
 async function loadLeaderboard(){
   try{const api=dbApi();const q=api.query(api.collection(api.db,"users"),api.orderBy("points","desc"),api.limit(10));const snap=await api.getDocs(q);leaderboardList.innerHTML="";snap.forEach(d=>{const li=document.createElement("li");li.textContent=`${d.data().username||"Anonymous"}: ${d.data().points||0}`;leaderboardList.appendChild(li);});}catch(e){console.warn("Leaderboard unavailable:",e);}
 }
-function startSolo(clues=36){
+function startSolo(clues=40){
   try {
     clearRoomWatch();
     roomId=null;
@@ -153,7 +153,7 @@ function startSolo(clues=36){
   }
 }
 signinBtn.addEventListener("click",signIn);
-$("solo-btn").addEventListener("click",()=>startSolo(36));
+$("solo-btn").addEventListener("click",()=>startSolo(40));
 $("share-btn").addEventListener("click",()=>{$("race-difficulty-section").style.display=$("race-difficulty-section").style.display==="none"?"block":"none";});
 document.querySelectorAll(".race-difficulty-btn").forEach(btn=>btn.addEventListener("click",async()=>{try{$("race-difficulty-section").style.display="none";await createRoom(Number(btn.dataset.clues),btn.dataset.difficulty);}catch(e){alert(e.message);}}));
 $("enter-code-btn").addEventListener("click",()=>$("join-section").style.display="block");
