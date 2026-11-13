@@ -83,7 +83,7 @@ function checkMistakes(){
 let mistakeCount=0, gameOver=false;
 function updateMistakeCounter(){
   const counter=$("mistake-counter");
-  if(counter)counter.textContent=`Mistakes: ${mistakeCount}/3`;
+  if(counter)counter.textContent=`${mistakeCount}/3`;
 }
 async function endForTooManyMistakes(){
   gameOver=true;
@@ -142,7 +142,7 @@ function watchRoom(){
 }
 function renderRoomState(){
   const players=Object.entries(roomData.players||{});
-  $("game-difficulty").textContent=`Difficulty: ${roomData.difficulty||"Custom"}`;
+  $("game-difficulty").textContent=`Race: ${roomData.difficulty||"Custom"}`;
   $("race-players").innerHTML=players.map(([uid,p])=>`<div>${escapeHtml(p.username)} ${uid===currentUser.uid?"(you)":""}</div>`).join("");
   const opponent=players.find(([uid])=>uid!==currentUser.uid);
   $("room-status").textContent=roomData.status==="waiting"?"Waiting for another player…":roomData.status==="countdown"?"Both players are in. Get ready!":roomData.status==="running"?"Race in progress!":roomData.status==="finished"?`${roomData.players[roomData.winnerUid]?.username||"Someone"} won!`:"Room ready";
@@ -205,7 +205,7 @@ function startSolo(clues=40){
     showGame();
     $("game-area").style.display="flex";
     $("controls").style.display="flex";
-    $("game-difficulty").textContent=`Difficulty: ${clues===40?"Easy":clues===32?"Medium":clues===26?"Hard":"Custom"}`;
+    $("game-difficulty").textContent=`Solo Puzzle: ${clues===40?"Easy":clues===32?"Medium":clues===26?"Hard":"Custom"}`;
     $("race-status").textContent="Generating puzzle…";
     $("opponent-progress").style.display="none";
     const sol=generateSolution();
