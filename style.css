@@ -464,3 +464,44 @@ button:active {
     background-color: #FFFAFB;
     border-color: var(--medium-gray);
 }
+
+/* Refined palette: cool blue-gray background, pink reserved for accents */
+:root {
+    --pastel-pink: #FFE2E8;
+    --soft-pink: #FEBFC7;
+    --medium-gray: #B5B8B8;
+    --light-gray: #D4D4D4;
+    --soft-blue: #B4C9E1;
+    --pale-blue: #CCE7F6;
+    --ink: #45494D;
+}
+
+body {
+    background-color: #E8EEF2;
+}
+
+/* Pink is an accent for erase and incorrect entries, not the page */
+.pad-control.erase {
+    background-color: var(--pastel-pink);
+    border-color: var(--soft-pink);
+}
+.cell-wrapper.mistake input {
+    background-color: var(--soft-pink);
+}
+
+/* Keep the rest of the interface cool and blue-gray */
+#room-panel,
+.cell-wrapper input,
+.cell-wrapper.given input,
+button,
+.num-btn,
+.pad-control {
+    background-color: #F8FAFC;
+}
+#opponent-progress,
+#controls .diff-btn {
+    background-color: var(--pale-blue);
+}
+#home-game-btn {
+    background-color: var(--soft-blue);
+}
