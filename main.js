@@ -82,6 +82,7 @@ function renderRoomState(){
   if(opponent){$("opponent-progress").style.display="block";const pct=Math.round(((opponent[1].progress||0)/Math.max(1,81-givenIndices.size))*100);$("opponent-progress").textContent=`${escapeHtml(opponent[1].username)}: ${pct}% complete`;}
   else $("opponent-progress").style.display="none";
   if(roomData.status==="countdown"||roomData.status==="running"||roomData.status==="finished"){
+    $("controls").style.display="none";
     showGame();
     if(!raceStarted&&roomData.puzzle&&roomData.solution){soloMode=false;renderPuzzle(roomData.puzzle,roomData.solution);}
     if(roomData.status==="countdown"){
@@ -136,6 +137,7 @@ function startSolo(clues=40){
     if(cells.length!==81 || board.children.length!==81) makeBoard();
     showGame();
     $("game-area").style.display="flex";
+    $("controls").style.display="flex";
     $("game-difficulty").textContent=`Difficulty: ${clues===40?"Easy":clues===32?"Medium":clues===26?"Hard":"Custom"}`;
     $("race-status").textContent="Generating puzzle…";
     $("opponent-progress").style.display="none";
