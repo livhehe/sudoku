@@ -53,12 +53,59 @@ function makePuzzle(solution,clues=36){
   return puzzle;
 }
 function renderPuzzle(puzzle,solution){
-  solutionBoard=solution.slice();givenIndices.clear();completionSent=false;
+  solutionBoard=solution.slice();givenIndices.clear();completionSent=false;mistakeCount=0;updateMistakeCounter();
   cells.forEach((cell,i)=>{cell.number=puzzle[i];cell.input.value=puzzle[i]||"";cell.pencil.clear();updatePencilDisplay(cell);cell.wrapper.classList.remove("given","mistake");if(puzzle[i]){givenIndices.add(i);cell.wrapper.classList.add("given");}});
   selectedIndex=null;highlightSelected(-1);checkMistakes();
 }
 function updatePencilDisplay(cell){cell.pencilContainer.querySelectorAll(".pencil-num").forEach(el=>{const n=Number(el.dataset.value);el.textContent=cell.pencil.has(n)?n:"";});}
-function checkMistakes(){cells.forEach(c=>c.wrapper.classList.remove("mistake"));const a=cells.map(c=>c.number);for(let i=0;i<81;i++){const n=a[i];if(!n)continue;const r=Math.floor(i/9),c=i%9;for(let j=0;j<9;j++){if(j!==c&&a[r*9+j]===n)cells[i].wrapper.classList.add("mistake");if(j!==r&&a[j*9+c]===n)cells[i].wrapper.classList.add("mistake");}const br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;for(let y=0;y<3;y++)for(let x=0;x<3;x++){const k=(br+y)*9+bc+x;if(k!==i&&a[k]===n)cells[i].wrapper.classList.add("mistake");}}}
+function checkMistakes(){
+  cells.forEach(c=>c.wrapper.classList.remove("mistake"));
+  const values=cells.map(c=>c.number);
+  const mistakes=new Set();
+  for(let i=0;i<81;i++){
+    const n=values[i];
+    if(!n)continue;
+    const row=Math.floor(i/9),col=i%9;
+    for(let j=0;j<9;j++){
+      if(j!==col&&values[row*9+j]===n){mistakes.add(i);mistakes.add(row*9+j);}
+      if(j!==row&&values[j*9+col]===n){mistakes.add(i);mistakes.add(j*9+col);}
+    }
+    const boxRow=Math.floor(row/3)*3,boxCol=Math.floor(col/3)*3;
+    for(let y=0;y<3;y++)for(let x=0;x<3;x++){
+      const k=(boxRow+y)*9+boxCol+x;
+      if(k!==i&&values[k]===n){mistakes.add(i);mistakes.add(k);}
+    }
+    if(solutionBoard[i]&&n!==solutionBoard[i])mistakes.add(i);
+  }
+  mistakes.forEach(i=>cells[i].wrapper.classList.add("mistake"));
+  return mistakes;
+}
+let mistakeCount=0;
+function updateMistakeCounter(){
+  const counter=$("mistake-counter");
+  if(counter)counter.textContent=`Mistakes: ${mistakeCount}/3`;
+}
+async function endForTooManyMistakes(){
+  raceStarted=false;
+  stopTimer();
+  $("race-status").textContent="Game over — too many mistakes!";
+  if(!soloMode&&roomId&&currentUser){
+    const players=Object.entries(roomData?.players||{});
+    const opponent=players.find(([uid])=>uid!==currentUser.uid);
+    if(opponent){
+      const api=dbApi(),ref=api.doc(api.db,"rooms",roomId);
+      try{
+        await api.runTransaction(api.db,async tx=>{
+          const snap=await tx.get(ref);
+          const data=snap.data();
+          if(data?.status==="running"&&!data.winnerUid){
+            tx.update(ref,{status:"finished",winnerUid:opponent[0],finishedAt:Date.now()});
+          }
+        });
+      }catch(e){console.error("Could not finish race after mistake limit:",e);}
+    }
+  }
+}
 function progress(){let correct=0;cells.forEach((c,i)=>{if(!givenIndices.has(i)&&c.number===solutionBoard[i])correct++;});return correct;}
 function updateProgress(){if(!roomId||!raceStarted)return;const api=dbApi();const value=progress();api.updateDoc(api.doc(api.db,"rooms",roomId),{[`players.${currentUser.uid}.progress`]:value}).catch(console.error);}
 function checkCompletion(){
@@ -195,7 +242,7 @@ document.querySelectorAll(".num-btn").forEach(btn=>btn.addEventListener("click",
   if(selectedIndex===null||givenIndices.has(selectedIndex)||(!soloMode&&!raceStarted))return;
   const cell=cells[selectedIndex],n=Number(btn.textContent);
   if(pencilMode){if(cell.number)return;cell.pencil.has(n)?cell.pencil.delete(n):cell.pencil.add(n);updatePencilDisplay(cell);return;}
-  cell.number=n;cell.input.value=n;cell.pencil.clear();updatePencilDisplay(cell);highlightSelected(selectedIndex);checkMistakes();if(!soloMode)updateProgress();checkCompletion();
+  cell.number=n;cell.input.value=n;cell.pencil.clear();updatePencilDisplay(cell);highlightSelected(selectedIndex);checkMistakes();if(n!==solutionBoard[selectedIndex]){mistakeCount++;updateMistakeCounter();$("race-status").textContent=`That's a mistake! ${mistakeCount}/3`;if(mistakeCount>3){endForTooManyMistakes();return;}}if(!soloMode)updateProgress();checkCompletion();
 }));
 document.querySelector(".pad-control.erase").addEventListener("click",()=>{if(selectedIndex===null||givenIndices.has(selectedIndex))return;const c=cells[selectedIndex];c.number=0;c.input.value="";c.pencil.clear();updatePencilDisplay(c);highlightSelected(selectedIndex);checkMistakes();if(!soloMode)updateProgress();});
 window.addEventListener("beforeunload",()=>{if(roomId&&currentUser&&dbApi())dbApi().updateDoc(dbApi().doc(dbApi().db,"rooms",roomId),{[`players.${currentUser.uid}.left`]:true}).catch(()=>{});});
