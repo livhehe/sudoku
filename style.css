@@ -863,3 +863,63 @@ body {
 .cell-wrapper:not(.given) input {
     color: #4F6F98;
 }
+
+
+/* Pause control beside the timer; cover the puzzle while paused. */
+#timer-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    justify-self: center;
+}
+#pause-btn {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--pale-blue);
+    border-color: var(--soft-blue);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
+}
+#pause-btn:hover { background: var(--soft-blue); }
+#puzzle-stage {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#pause-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: #F0ECF7;
+    border-radius: 12px;
+}
+#pause-screen .pause-title {
+    color: var(--ink);
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+#resume-btn {
+    padding: 10px 22px;
+    border-radius: 999px;
+    background: var(--pale-blue);
+    border-color: var(--soft-blue);
+    font-weight: 600;
+}
+@media(max-width:500px) {
+    #timer-group { gap: 5px; }
+    #pause-btn { width: 28px; height: 28px; }
+}
