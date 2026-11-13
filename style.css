@@ -525,3 +525,16 @@ button,
 #menu-section > #enter-code-btn:hover {
     background-color: var(--pale-blue);
 }
+
+/* Match Sign In to the main menu buttons and emphasize the greeting */
+#signin-section #signin-btn {
+    background-color: #FFFFFF;
+    border-color: var(--soft-blue);
+}
+#signin-section #signin-btn:hover {
+    background-color: var(--pale-blue);
+}
+#welcome-message {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
