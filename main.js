@@ -91,7 +91,7 @@ function updateUndoButton(){
 }
 function rememberMove(index){
   const cell=cells[index];
-  moveHistory.push({index,number:cell.number,pencil:[...cell.pencil],mistakeCount});
+  moveHistory.push({index,number:cell.number,pencil:[...cell.pencil]});
   updateUndoButton();
 }
 function undoMove(){
@@ -101,11 +101,9 @@ function undoMove(){
   cell.number=previous.number;
   cell.input.value=previous.number||"";
   cell.pencil=new Set(previous.pencil);
-  mistakeCount=previous.mistakeCount;
   selectedIndex=previous.index;
   updatePencilDisplay(cell);
   highlightSelected(selectedIndex);
-  updateMistakeCounter();
   checkMistakes();
   updateNumberPad();
   updateUndoButton();
