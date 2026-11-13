@@ -12,7 +12,7 @@ function makeBoard(){
     const wrapper=document.createElement("div"); wrapper.className="cell-wrapper";
     const pencilContainer=document.createElement("div"); pencilContainer.className="pencil-container";
     for(let n=1;n<=9;n++){const p=document.createElement("div");p.className="pencil-num";p.dataset.value=n;pencilContainer.appendChild(p);}
-    const input=document.createElement("input");input.maxLength=1;input.readOnly=true;
+    const input=document.createElement("input");input.maxLength=1;input.readOnly=true;input.tabIndex=-1;input.addEventListener("pointerdown",event=>event.preventDefault());
     wrapper.append(pencilContainer,input);
     wrapper.addEventListener("click",()=>{selectedIndex=i;highlightSelected(i);});
     board.appendChild(wrapper);
